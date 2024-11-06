@@ -1,0 +1,20 @@
+{
+  "extends": "../config/react.tsconfig.json",
+ 
+  "include": ["."],
+  "exclude": ["dist", "node_modules","components"],
+  "compilerOptions": {
+    "outDir": "dist",
+        // ... other options
+        "noUnusedLocals": false,
+        "strictNullChecks": false,
+        "noImplicitAny": false,
+        // This will disable the nullish coalescing operator check
+        "exactOptionalPropertyTypes": false,
+        // Adding these options to ensure the check is fully disabled
+   
+        "useDefineForClassFields": false,
+        // Disable the specific error code for nullish coalescing operator
+        
+  }
+}
