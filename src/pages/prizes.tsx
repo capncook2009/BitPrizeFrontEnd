@@ -32,7 +32,7 @@ export default function PrizesPage() {
 
   const [isOpen, setIsOpen] = useState(false);
 
-  const {} = useGameState({ userId: "", initialState: {}, apiEndpoint: "" });
+  const {} = useGameState({ userId: "", initialState: {} });
 
   const openModal = () => {
     setIsOpen(true);

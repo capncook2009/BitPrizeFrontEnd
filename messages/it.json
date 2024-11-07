@@ -1,0 +1,56 @@
+{
+  "Common": {
+    "depositToWin": "Deposita per vincere",
+    "prizePool": "Montepremi {network}",
+    "grandPrize": "Primo Premio",
+    "joinDiscord": "Unisciti alla nostra Community Discord",
+    "showMore": "Mostra di più",
+    "drawId": "Estrazione #{id}",
+    "manage": "Gestisci",
+    "deposit": "Deposita",
+    "withdraw": "Preleva",
+    "learnMore": "Maggiori Informazioni",
+    "back": "Indietro",
+    "connectWallet": "Connetti Portafogli",
+    "viewTx": "Visualizza TX",
+    "viewOn": "Visualizza su {name}",
+    "close": "Chiudi",
+    "learnAboutRisks": "Comprendi i rischi",
+    "readDocs": "Leggi la documentazione",
+    "termsOfService": "Termini di servizio"
+  },
+  "Navigation": {
+    "home": "Home",
+    "prizes": "Premi",
+    "vaults": "Casseforti",
+    "vault": "Cassaforte",
+    "account": "Account"
+  },
+  "Home": {
+    "withdrawAnyTime": "Puoi prelevare il tuo deposito in qualsiasi momento"
+  },
+  "Prizes": {
+    "drawModal": {
+      "drawTotal": {
+        "beforeValue": "Questa estrazione ha visto vincere {numWallets} portafogli unici per un totale di",
+        "afterValue": "come premi.",
+        "afterValueOngoing": "in premi fino a oggi."
+      },
+      "winner": "Vincitore",
+      "prize": "Premio",
+      "youWereEligible": "Hai partecipato in questa estrazione."
+    }
+  },
+  "Vaults": {
+    "filter": "Filtra",
+    "filters": {
+      "showAll": "Mostra Tutto",
+      "inWallet": "Nel Tuo Portafogli",
+      "stablecoins": "Stablecoins",
+      "allVaultLists": "Tutte le Liste delle Casseforti"
+    },
+    "manageVaultLists": "Gestisci Liste delle Casseforti",
+    "clearFilters": "Annulla Filtri",
+    "disclaimer": "Le Casseforti PoolTogether possono essere create da chiunque. <link>Assicurati di comprendere dove stai depositando</link>"
+  }
+}

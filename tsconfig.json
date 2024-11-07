@@ -9,6 +9,8 @@
     ".next/types/**/*.ts"
   ],
   "compilerOptions": {
+    "skipDefaultLibCheck": true
+,
     "baseUrl": ".",
     "paths": {
       "@components/*": ["./src/components/*"],

@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev --port 3000",
     "build": "next build",
+    "build2": "tsc --noEmit && next build",
     "start": "next start"
   },
   "dependencies": {

@@ -11,7 +11,6 @@ interface GameState {
 interface UseGameStateProps {
   userId: string;
   initialState?: Partial<GameState>;
-  apiEndpoint: string;
 }
 
 interface UseGameStateReturn {
@@ -29,12 +28,11 @@ const defaultGameState: GameState = {
 };
 
 const STORAGE_KEY = "gameState";
-const BEST_SCORE_KEY = "bestScore";
+// const BEST_SCORE_KEY = "bestScore";
 
 export const useGameState = ({
   userId,
   initialState = {},
-  apiEndpoint,
 }: UseGameStateProps): UseGameStateReturn => {
   const [gameState, setGameState] = useState<GameState | null>(null);
   const [error, setError] = useState<Error | null>(null);
