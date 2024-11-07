@@ -64,7 +64,7 @@ export const useGameState = ({
     } finally {
       setIsLoading(false);
     }
-  }, [userId, initialState]);
+  }, []);
 
   // Sync with backend when localStorage changes
   const syncWithBackend = async (state: GameState) => {
