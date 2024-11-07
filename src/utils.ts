@@ -36,7 +36,7 @@ export const createCustomWagmiConfig = (
     chains: supportedNetworks,
     connectors: getWalletConnectors(),
     transports: getNetworkTransports(
-      supportedNetworks.map((network) => network.id),
+      supportedNetworks.map((network) => network?.id),
       { useCustomRPCs: options?.useCustomRPCs }
     ),
     batch: { multicall: { batchSize: 1_024 * 1_024 } },
