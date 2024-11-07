@@ -132,7 +132,7 @@ export default function ReferralPage() {
 
   return (
     <Layout className="gap-6 lg:gap-8">
-      <div className="w-full max-w-md mx-auto space-y-6 px-4 lg:px-0">
+      <div className="w-full mx-auto space-y-6 px-4 lg:px-0">
         {/* Hero Section */}
         <div className="text-center space-y-4">
           {/* <div className="w-48 h-48 mx-auto">
