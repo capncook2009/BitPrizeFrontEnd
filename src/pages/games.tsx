@@ -5,6 +5,8 @@ import Image from "next/image";
 import { getMessages } from "src/utils";
 import { Layout } from "@components/Layout";
 import { PlayCircleIcon, PlayIcon } from "@heroicons/react/24/solid";
+import { useState } from "react";
+import { useGameState } from "@hooks/useGameState";
 
 interface ReferralPageProps {
   messages: IntlMessages;
@@ -17,6 +19,8 @@ const dummyGames: any[] = [
     name: "2048",
     lastScore: 15750,
     highScore: 24800,
+    live: true,
+    gameLink: "/games/2048/index.html",
     description:
       "Swipe (Up, Down, Left or Right) to move the tiles. When two tiles with the same number touch, they merge into one.",
     category: "Arcade",
@@ -29,6 +33,8 @@ const dummyGames: any[] = [
     name: "Puzzle Quest",
     lastScore: 3200,
     highScore: 5500,
+    live: false,
+    gameLink: "/games/2048/index.html",
     description: "Mind-bending puzzles and challenges",
     category: "Puzzle",
     thumbnail:
@@ -40,6 +46,8 @@ const dummyGames: any[] = [
     name: "Racing Legends",
     lastScore: 8900,
     highScore: 12300,
+    live: false,
+    gameLink: "/games/2048/index.html",
     description: "High-speed racing action",
     category: "Racing",
     thumbnail: "https://i.ytimg.com/vi/k33q-lCJfRE/maxresdefault.jpg",
@@ -51,6 +59,8 @@ const dummyGames: any[] = [
     name: "Math Challenge",
     lastScore: 1500,
     highScore: 1800,
+    live: false,
+    gameLink: "/games/2048/index.html",
     description: "Test your math skills",
     category: "Educational",
     thumbnail:
@@ -73,6 +83,8 @@ export const getStaticProps: GetStaticProps<ReferralPageProps> = async ({
 export default function ReferralPage() {
   const t = useTranslations("Common");
 
+  const [currentGame, setCurrGame] = useState("");
+
   const referralCode = "";
   const claimedReferrals = [
     {
@@ -90,6 +102,32 @@ export default function ReferralPage() {
 
   const handleCopy = () => {
     navigator.clipboard.writeText(referralCode);
+  };
+
+  const handleGamePlay = (gameLink) => {
+    console.log("game ", gameLink);
+    setCurrGame(gameLink);
+    openModal();
+  };
+
+  const [isOpen, setIsOpen] = useState(false);
+
+  const {} = useGameState({ userId: "", initialState: {}, apiEndpoint: "" });
+
+  const openModal = () => {
+    setIsOpen(true);
+    // Request fullscreen when opening modal
+    document.documentElement.requestFullscreen().catch((err) => {
+      console.log(`Error attempting to enable fullscreen: ${err.message}`);
+    });
+  };
+
+  const closeModal = () => {
+    setIsOpen(false);
+    // Exit fullscreen when closing modal
+    if (document.fullscreenElement) {
+      document.exitFullscreen();
+    }
   };
 
   return (
@@ -210,11 +248,12 @@ export default function ReferralPage() {
                     {game.lastPlayed}
                   </span>
                   <button
-                    onClick={() => {}}
+                    onClick={() => handleGamePlay(game.gameLink)}
+                    disabled={!game.live}
                     className="flex items-center space-x-1 rounded-full bg-indigo-600 px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-indigo-700 sm:px-4 sm:py-2 sm:text-sm"
                   >
                     <PlayIcon className="h-4 w-4 sm:h-5 sm:w-5" />
-                    <span>Play</span>
+                    <span>{game.live ? "Play" : "Arriving soon"}</span>
                   </button>
                 </div>
               </div>
@@ -222,6 +261,39 @@ export default function ReferralPage() {
           ))}
         </div>
       </div>
+
+      {isOpen && (
+        <div className="fixed inset-0 z-50 bg-black">
+          <div className="w-full h-full relative">
+            {/* Close button */}
+            <button
+              onClick={closeModal}
+              className="absolute top-4 right-4 z-50 p-2 bg-white rounded-full hover:bg-gray-200"
+            >
+              <svg
+                className="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
+
+            {/* Game container */}
+            <iframe
+              src={currentGame}
+              className="w-full h-full border-0"
+              allow="fullscreen"
+            />
+          </div>
+        </div>
+      )}
     </Layout>
   );
 }
