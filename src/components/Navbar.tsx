@@ -84,8 +84,10 @@ export const Navbar = () => {
       </FlowbiteNavbar>
 
       {/* nav bar for prizes page */}
-      {router.pathname === "/games" || router.pathname === "/referral" ? (
-        <div className="grid max-w-lg grid-cols-2 mx-auto font-medium rounded-md overflow-hidden bg-slate-200">
+      {router.pathname === "/games" ||
+      router.pathname === "/referral" ||
+      router.pathname === "/leaderboard" ? (
+        <div className="grid max-w-lg grid-cols-3 mx-auto font-medium rounded-md overflow-hidden bg-slate-200">
           <Link
             href="/games"
             className={classNames(
@@ -97,6 +99,20 @@ export const Navbar = () => {
           >
             <span className="text-xs font-medium group-hover:text-pt-purple-200">
               Games
+            </span>
+          </Link>
+          <Link
+            href="/leaderboard"
+            className={classNames(
+              "inline-flex p-3 flex-col items-center justify-center px-5 hover:bg-pt-purple-500 group",
+              {
+                "bg-slate-400 md:!text-pt-teal":
+                  router.pathname === "/leaderboard",
+              }
+            )}
+          >
+            <span className="text-xs font-medium group-hover:text-pt-purple-200">
+              Leaderboard
             </span>
           </Link>
           <Link
@@ -142,9 +158,10 @@ const NavbarLinks = (props: NavbarLinksProps) => {
           href={link.href}
           className={classNames(
             " inline-flex flex-col items-center justify-center p-3",
-            "hover:bg-pt-purple-500 group",
+            "hover:bg-pt-purple-500 md:hover:bg-transparent md:hover:text-pt-purple group",
             {
-              "bg-slate-400 md:!text-pt-teal": link.href === router.pathname,
+              "bg-slate-400 md:bg-transparent md:!text-pt-teal":
+                link.href === router.pathname,
             }
           )}
         >
