@@ -26,7 +26,7 @@ export default function VaultsPage() {
   return (
     <Layout className="gap-6 lg:gap-8">
       <VaultsHeader />
-      {/* <VaultFilters /> */}
+      <VaultFilters />
       <VaultsDisclaimer />
       <VaultsDisplay />
     </Layout>
