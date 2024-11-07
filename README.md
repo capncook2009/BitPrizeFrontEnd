@@ -1,25 +1,3 @@
-<p align="center">
-  <a href="https://github.com/pooltogether/pooltogether--brand-assets">
-    <img src="https://github.com/pooltogether/pooltogether--brand-assets/blob/977e03604c49c63314450b5d432fe57d34747c66/logo/pooltogether-logo--purple-gradient.png?raw=true" alt="PoolTogether Brand" style="max-width:100%;" width="200">
-  </a>
-</p>
-
-<br />
-
-# 💻 &nbsp; Cabana App
-
-![next](https://img.shields.io/static/v1?label&logo=nextdotjs&logoColor=white&message=Next.js&color=black)
-![ts](https://img.shields.io/badge/typescript-%23007ACC.svg?style=flat&logo=typescript&logoColor=white)
-![viem](https://img.shields.io/static/v1?label&logo=v&logoColor=white&message=Viem&color=gray)
-![tailwind](https://img.shields.io/static/v1?label&logo=tailwindcss&logoColor=white&message=tailwind&color=38B2AC)
-![version](https://img.shields.io/github/package-json/v/GenerationSoftware/pooltogether-client-monorepo?filename=apps%2Fapp%2Fpackage.json&color=brightgreen)
-
-[![Crowdin](https://badges.crowdin.net/e/b3a9bbf1e212af6e8b9d1b215c5f84ca/localized.svg)](https://g9software.crowdin.com/cabana)
-
-# 🏆 &nbsp; Overview
-
-App w/ core PoolTogether Hyperstructure functionality.
-
 ## 🏎️ &nbsp; Quickstart
 
 ### Running Development Server
