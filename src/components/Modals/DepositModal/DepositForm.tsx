@@ -1,4 +1,4 @@
-import { Vault } from '@generationsoftware/hyperstructure-client-js'
+import { Vault } from "@generationsoftware/hyperstructure-client-js";
 import {
   useBeefyVault,
   useSelectedVaults,
@@ -9,17 +9,17 @@ import {
   useUserVaultShareBalance,
   useVaultExchangeRate,
   useVaultSharePrice,
-  useVaultTokenPrice
-} from '@generationsoftware/hyperstructure-react-hooks'
-import { TokenIcon } from '@shared/react-components'
+  useVaultTokenPrice,
+} from "@generationsoftware/hyperstructure-react-hooks";
+import { TokenIcon } from "@shared/react-components";
 import {
   Token,
   TokenWithAmount,
   TokenWithLogo,
   TokenWithPrice,
-  TokenWithSupply
-} from '@shared/types'
-import { DropdownItem, Spinner } from '@shared/ui'
+  TokenWithSupply,
+} from "@shared/types";
+import { DropdownItem, Spinner } from "@shared/ui";
 import {
   formatBigIntForDisplay,
   formatNumberForDisplay,
@@ -27,83 +27,98 @@ import {
   getSharesFromAssets,
   getVaultId,
   lower,
-  ZAP_SETTINGS
-} from '@shared/utilities'
-import classNames from 'classnames'
-import { atom, useAtom, useSetAtom } from 'jotai'
-import { useTranslations } from 'next-intl'
-import { useEffect, useMemo, useState } from 'react'
-import { FormProvider, useForm } from 'react-hook-form'
-import { getRoundedDownFormattedTokenAmount } from 'src/utils'
-import { Address, formatUnits, parseUnits } from 'viem'
-import { useAccount } from 'wagmi'
-import { ZAP_PRIORITIES } from '@constants/config'
-import { useZapTokenOptions } from '@hooks/useZapTokenOptions'
-import { isValidFormInput, TxFormInput, TxFormValues } from '../TxFormInput'
+  ZAP_SETTINGS,
+} from "@shared/utilities";
+import classNames from "classnames";
+import { atom, useAtom, useSetAtom } from "jotai";
+import { useTranslations } from "next-intl";
+import { useEffect, useMemo, useState } from "react";
+import { FormProvider, useForm } from "react-hook-form";
+import { getRoundedDownFormattedTokenAmount } from "src/utils";
+import { Address, formatUnits, parseUnits } from "viem";
+import { useAccount } from "wagmi";
+import { ZAP_PRIORITIES } from "@constants/config";
+import { useZapTokenOptions } from "@hooks/useZapTokenOptions";
+import { isValidFormInput, TxFormInput, TxFormValues } from "../TxFormInput";
 
-export const depositFormTokenAddressAtom = atom<Address | undefined>(undefined)
-export const depositFormTokenAmountAtom = atom<string>('')
+export const depositFormTokenAddressAtom = atom<Address | undefined>(undefined);
+export const depositFormTokenAmountAtom = atom<string>("");
 
-export const depositFormShareAmountAtom = atom<string>('')
+export const depositFormShareAmountAtom = atom<string>("");
 
-export const depositZapPriceImpactAtom = atom<number | undefined>(undefined)
-export const depositZapMinReceivedAtom = atom<bigint | undefined>(undefined)
+export const depositZapPriceImpactAtom = atom<number | undefined>(undefined);
+export const depositZapMinReceivedAtom = atom<bigint | undefined>(undefined);
 
 export interface DepositFormProps {
-  vault: Vault
-  showInputInfoRows?: boolean
+  vault: Vault;
+  showInputInfoRows?: boolean;
 }
 
 export const DepositForm = (props: DepositFormProps) => {
-  const { vault, showInputInfoRows } = props
+  const { vault, showInputInfoRows } = props;
 
-  const t_txModals = useTranslations('TxModals')
-  const t_errors = useTranslations('Error.formErrors')
+  const t_txModals = useTranslations("TxModals");
+  const t_errors = useTranslations("Error.formErrors");
 
-  const { address: userAddress } = useAccount()
+  const { address: userAddress } = useAccount();
 
   //: todo fix exchange rate
-  const { data: vaultExchangeRate } = useVaultExchangeRate(vault)
+  const { data: vaultExchangeRate } = useVaultExchangeRate(vault);
   // const vaultExchangeRate = 1000000n
 
-  const { data: vaultToken } = useVaultTokenPrice(vault)
+  const { data: vaultToken } = useVaultTokenPrice(vault);
   const { data: vaultTokenWithAmount } = useTokenBalance(
     vault.chainId,
     userAddress!,
     vaultToken?.address!,
     { refetchOnWindowFocus: true }
-  )
+  );
 
-  const { data: share } = useVaultSharePrice(vault)
+  const { data: share } = useVaultSharePrice(vault);
 
-  const [formTokenAddress, setFormTokenAddress] = useAtom(depositFormTokenAddressAtom)
+  const [formTokenAddress, setFormTokenAddress] = useAtom(
+    depositFormTokenAddressAtom
+  );
 
-  const tokenAddress = formTokenAddress ?? vaultToken?.address
+  const tokenAddress = formTokenAddress ?? vaultToken?.address;
 
-  const { vaults } = useSelectedVaults()
+  const { vaults } = useSelectedVaults();
 
   const inputVault = useMemo(() => {
     if (!!vault && !!tokenAddress) {
-      const vaultId = getVaultId({ chainId: vault.chainId, address: tokenAddress })
-      return Object.values(vaults.vaults).find((v) => getVaultId(v) === vaultId)
+      const vaultId = getVaultId({
+        chainId: vault.chainId,
+        address: tokenAddress,
+      });
+      return Object.values(vaults.vaults).find(
+        (v) => getVaultId(v) === vaultId
+      );
     }
-  }, [vault, tokenAddress, vaults])
+  }, [vault, tokenAddress, vaults]);
 
   const shareLogoURI = useMemo(() => {
     if (!!vault) {
-      return vault.logoURI ?? vaults.allVaultInfo.find((v) => getVaultId(v) === vault.id)?.logoURI
+      return (
+        vault.logoURI ??
+        vaults.allVaultInfo.find((v) => getVaultId(v) === vault.id)?.logoURI
+      );
     }
-  }, [vault, vaults])
+  }, [vault, vaults]);
 
-  const { data: tokenData } = useToken(vault.chainId, tokenAddress!)
-  const { data: tokenPrices } = useTokenPrices(vault.chainId, !!tokenAddress ? [tokenAddress] : [])
-  const { data: inputVaultWithPrice } = useVaultSharePrice(inputVault!)
-  const { data: beefyVault } = useBeefyVault(vault)
+  const { data: tokenData } = useToken(vault.chainId, tokenAddress!);
+  const { data: tokenPrices } = useTokenPrices(
+    vault.chainId,
+    !!tokenAddress ? [tokenAddress] : []
+  );
+  const { data: inputVaultWithPrice } = useVaultSharePrice(inputVault!);
+  const { data: beefyVault } = useBeefyVault(vault);
   const { data: underlyingBeefyTokenPrices } = useTokenPrices(
     vault.chainId,
     !!beefyVault ? [beefyVault.want] : []
-  )
-  const token: (TokenWithSupply & TokenWithPrice & Partial<TokenWithLogo>) | undefined =
+  );
+  const token:
+    | (TokenWithSupply & TokenWithPrice & Partial<TokenWithLogo>)
+    | undefined =
     !!tokenAddress && (!!tokenData || !!inputVaultWithPrice)
       ? {
           logoURI:
@@ -112,7 +127,9 @@ export const DepositForm = (props: DepositFormProps) => {
               : inputVault?.logoURI,
           ...tokenData!,
           ...inputVaultWithPrice!,
-          ...(!!beefyVault && lower(tokenAddress) === lower(beefyVault.address) ? beefyVault : {}),
+          ...(!!beefyVault && lower(tokenAddress) === lower(beefyVault.address)
+            ? beefyVault
+            : {}),
           price:
             tokenPrices?.[lower(tokenAddress)] ??
             inputVaultWithPrice?.price ??
@@ -121,9 +138,9 @@ export const DepositForm = (props: DepositFormProps) => {
             lower(tokenAddress) === lower(beefyVault.address)
               ? (underlyingBeefyTokenPrices?.[lower(beefyVault.want)] ?? 0) *
                 parseFloat(formatUnits(beefyVault.pricePerFullShare, 18))
-              : undefined)
+              : undefined),
         }
-      : undefined
+      : undefined;
 
   // console.log('price test ', {
   //   tokenPrices,
@@ -133,66 +150,75 @@ export const DepositForm = (props: DepositFormProps) => {
   //   tokenAddress
   // })
 
-  const { data: tokenWithAmount, isFetched: isFetchedTokenBalance } = useTokenBalance(
-    vault.chainId,
-    userAddress!,
-    tokenAddress!,
-    { refetchOnWindowFocus: true }
-  )
-  const tokenBalance = isFetchedTokenBalance && !!tokenWithAmount ? tokenWithAmount.amount : 0n
+  const { data: tokenWithAmount, isFetched: isFetchedTokenBalance } =
+    useTokenBalance(vault.chainId, userAddress!, tokenAddress!, {
+      refetchOnWindowFocus: true,
+    });
+  const tokenBalance =
+    isFetchedTokenBalance && !!tokenWithAmount ? tokenWithAmount.amount : 0n;
 
-  const { data: shareWithAmount, isFetched: isFetchedShareWithAmount } = useUserVaultShareBalance(
-    vault,
-    userAddress!
-  )
-  const shareBalance = isFetchedShareWithAmount && !!shareWithAmount ? shareWithAmount.amount : 0n
+  const { data: shareWithAmount, isFetched: isFetchedShareWithAmount } =
+    useUserVaultShareBalance(vault, userAddress!);
+  const shareBalance =
+    isFetchedShareWithAmount && !!shareWithAmount ? shareWithAmount.amount : 0n;
 
   const formMethods = useForm<TxFormValues>({
-    mode: 'onChange',
-    defaultValues: { tokenAmount: '', shareAmount: '' }
-  })
+    mode: "onChange",
+    defaultValues: { tokenAmount: "", shareAmount: "" },
+  });
 
-  const [formTokenAmount, setFormTokenAmount] = useAtom(depositFormTokenAmountAtom)
-  const setFormShareAmount = useSetAtom(depositFormShareAmountAtom)
+  const [formTokenAmount, setFormTokenAmount] = useAtom(
+    depositFormTokenAmountAtom
+  );
+  const setFormShareAmount = useSetAtom(depositFormShareAmountAtom);
 
-  const [priceImpact, setPriceImpact] = useAtom(depositZapPriceImpactAtom)
-  const setMinReceived = useSetAtom(depositZapMinReceivedAtom)
+  const [priceImpact, setPriceImpact] = useAtom(depositZapPriceImpactAtom);
+  const setMinReceived = useSetAtom(depositZapMinReceivedAtom);
 
   const [cachedZapAmountOut, setCachedZapAmountOut] =
-    useState<ReturnType<typeof useSendDepositZapTransaction>['amountOut']>()
+    useState<ReturnType<typeof useSendDepositZapTransaction>["amountOut"]>();
 
   useEffect(() => {
-    setFormTokenAddress(ZAP_PRIORITIES[vault.chainId]?.[lower(vault.address)])
-    setFormTokenAmount('')
-    setFormShareAmount('')
-    setPriceImpact(undefined)
-    setMinReceived(undefined)
-    setCachedZapAmountOut(undefined)
-    formMethods.reset()
-  }, [])
+    setFormTokenAddress(ZAP_PRIORITIES[vault.chainId]?.[lower(vault.address)]);
+    setFormTokenAmount("");
+    setFormShareAmount("");
+    setPriceImpact(undefined);
+    setMinReceived(undefined);
+    setCachedZapAmountOut(undefined);
+    formMethods.reset();
+  }, []);
 
   const depositAmount = useMemo(() => {
     return !!formTokenAmount && token?.decimals !== undefined
       ? parseUnits(formTokenAmount, token.decimals)
-      : 0n
-  }, [formTokenAmount, token])
+      : 0n;
+  }, [formTokenAmount, token]);
 
-  const { amountOut: zapAmountOut, isFetchingZapArgs } = useSendDepositZapTransaction(
-    { address: token?.address!, decimals: token?.decimals!, amount: depositAmount },
-    vault
-  )
+  const { amountOut: zapAmountOut, isFetchingZapArgs } =
+    useSendDepositZapTransaction(
+      {
+        address: token?.address!,
+        decimals: token?.decimals!,
+        amount: depositAmount,
+      },
+      vault
+    );
 
   const isZapping =
-    !!vaultToken && !!formTokenAddress && lower(vaultToken.address) !== lower(formTokenAddress)
+    !!vaultToken &&
+    !!formTokenAddress &&
+    lower(vaultToken.address) !== lower(formTokenAddress);
   const isZappingAndSwapping =
-    isZapping && !!cachedZapAmountOut && cachedZapAmountOut.expected !== cachedZapAmountOut.min
+    isZapping &&
+    !!cachedZapAmountOut &&
+    cachedZapAmountOut.expected !== cachedZapAmountOut.min;
 
   const vaultDecimals =
     vault.decimals ??
     vaultToken?.decimals ??
     vaultTokenWithAmount?.decimals ??
     share?.decimals ??
-    shareWithAmount?.decimals
+    shareWithAmount?.decimals;
 
   useEffect(() => {
     if (
@@ -202,52 +228,67 @@ export const DepositForm = (props: DepositFormProps) => {
       (cachedZapAmountOut?.expected !== zapAmountOut.expected ||
         cachedZapAmountOut?.min !== zapAmountOut.min)
     ) {
-      setCachedZapAmountOut(zapAmountOut)
+      setCachedZapAmountOut(zapAmountOut);
     }
-  }, [isZapping, zapAmountOut])
+  }, [isZapping, zapAmountOut]);
 
   useEffect(() => {
     if (isZapping && !!cachedZapAmountOut && vaultDecimals !== undefined) {
-      const formattedShares = formatUnits(cachedZapAmountOut.expected, vaultDecimals)
-      const slicedShares = formattedShares.endsWith('.0')
+      const formattedShares = formatUnits(
+        cachedZapAmountOut.expected,
+        vaultDecimals
+      );
+      const slicedShares = formattedShares.endsWith(".0")
         ? formattedShares.slice(0, -2)
-        : formattedShares
+        : formattedShares;
 
-      setFormShareAmount(slicedShares)
+      setFormShareAmount(slicedShares);
 
-      formMethods.setValue('shareAmount', slicedShares, { shouldValidate: true })
+      formMethods.setValue("shareAmount", slicedShares, {
+        shouldValidate: true,
+      });
     }
-  }, [cachedZapAmountOut])
+  }, [cachedZapAmountOut]);
 
   const handleTokenAmountChange = (tokenAmount: string) => {
-    if (!!vaultExchangeRate && token?.decimals !== undefined && share?.decimals !== undefined) {
+    if (
+      !!vaultExchangeRate &&
+      token?.decimals !== undefined &&
+      share?.decimals !== undefined
+    ) {
       if (isValidFormInput(tokenAmount, token.decimals)) {
-        setFormTokenAmount(tokenAmount)
+        setFormTokenAmount(tokenAmount);
 
         if (!isZapping) {
-          const tokens = parseUnits(tokenAmount, token.decimals)
-          const shares = getSharesFromAssets(tokens, vaultExchangeRate, share.decimals)
-          const formattedShares = formatUnits(shares, share.decimals)
-          const slicedShares = formattedShares.endsWith('.0')
+          const tokens = parseUnits(tokenAmount, token.decimals);
+          const shares = getSharesFromAssets(
+            tokens,
+            vaultExchangeRate,
+            share.decimals
+          );
+          const formattedShares = formatUnits(shares, share.decimals);
+          const slicedShares = formattedShares.endsWith(".0")
             ? formattedShares.slice(0, -2)
-            : formattedShares
+            : formattedShares;
 
-          setFormShareAmount(slicedShares)
+          setFormShareAmount(slicedShares);
 
-          formMethods.setValue('shareAmount', slicedShares, { shouldValidate: true })
+          formMethods.setValue("shareAmount", slicedShares, {
+            shouldValidate: true,
+          });
         }
       } else {
-        setFormTokenAmount('0')
+        setFormTokenAmount("0");
       }
     }
-  }
+  };
 
   useEffect(() => {
     if (!!tokenData && isValidFormInput(formTokenAmount, tokenData.decimals)) {
-      handleTokenAmountChange(formTokenAmount)
-      formMethods.trigger('tokenAmount')
+      handleTokenAmountChange(formTokenAmount);
+      formMethods.trigger("tokenAmount");
     }
-  }, [tokenData])
+  }, [tokenData]);
 
   const handleShareAmountChange = (shareAmount: string) => {
     if (
@@ -257,33 +298,39 @@ export const DepositForm = (props: DepositFormProps) => {
       share?.decimals !== undefined
     ) {
       if (isValidFormInput(shareAmount, share.decimals)) {
-        setFormShareAmount(shareAmount)
+        setFormShareAmount(shareAmount);
 
-        const shares = parseUnits(shareAmount, share.decimals)
-        const tokens = getAssetsFromShares(shares, vaultExchangeRate, share.decimals)
-        const formattedTokens = formatUnits(tokens, token.decimals)
-        const slicedTokens = formattedTokens.endsWith('.0')
+        const shares = parseUnits(shareAmount, share.decimals);
+        const tokens = getAssetsFromShares(
+          shares,
+          vaultExchangeRate,
+          share.decimals
+        );
+        const formattedTokens = formatUnits(tokens, token.decimals);
+        const slicedTokens = formattedTokens.endsWith(".0")
           ? formattedTokens.slice(0, -2)
-          : formattedTokens
+          : formattedTokens;
 
-        setFormTokenAmount(slicedTokens)
+        setFormTokenAmount(slicedTokens);
 
-        formMethods.setValue('tokenAmount', slicedTokens, { shouldValidate: true })
+        formMethods.setValue("tokenAmount", slicedTokens, {
+          shouldValidate: true,
+        });
       } else {
-        setFormTokenAmount('0')
+        setFormTokenAmount("0");
       }
     }
-  }
+  };
 
   const tokenInputData = useMemo(() => {
     if (!!token) {
       return {
         ...token,
         amount: tokenBalance,
-        price: token.price ?? 0
-      }
+        price: token.price ?? 0,
+      };
     }
-  }, [token, tokenBalance])
+  }, [token, tokenBalance]);
 
   const shareInputData = useMemo(() => {
     if (!!share) {
@@ -291,51 +338,64 @@ export const DepositForm = (props: DepositFormProps) => {
         ...share,
         amount: shareBalance,
         price: 1,
-        logoURI: shareLogoURI ?? vault.tokenLogoURI
-      }
+        logoURI: shareLogoURI ?? vault.tokenLogoURI,
+      };
     }
-  }, [vault, share, shareBalance, shareLogoURI])
+  }, [vault, share, shareBalance, shareLogoURI]);
 
   const zapTokenOptions = useZapTokenOptions(vault.chainId, {
     includeNativeAsset: true,
     includeVaultsWithBalance: true,
-    includeBeefyVault: true
-  })
+    includeBeefyVault: true,
+  });
 
   const tokenPickerOptions = useMemo(() => {
-    const getOptionId = (option: Token) => `zapToken-${option.chainId}-${option.address}`
+    const getOptionId = (option: Token) =>
+      `zapToken-${option.chainId}-${option.address}`;
 
     let options = zapTokenOptions.map(
       (tokenOption): DropdownItem => ({
         id: getOptionId(tokenOption),
         content: <TokenPickerOption token={tokenOption} />,
-        onClick: () => setFormTokenAddress(tokenOption.address)
+        onClick: () => setFormTokenAddress(tokenOption.address),
       })
-    )
+    );
 
     if (!!vaultToken) {
-      const isVaultToken = (id: string) => lower(id.split('-')[2]) === lower(vaultToken.address)
+      const isVaultToken = (id: string) =>
+        lower(id.split("-")[2]) === lower(vaultToken.address);
 
-      const vaultTokenOption = options.find((option) => isVaultToken(option.id))
+      const vaultTokenOption = options.find((option) =>
+        isVaultToken(option.id)
+      );
 
       if (!!vaultTokenOption) {
-        options = options.filter((option) => !isVaultToken(option.id))
-        options.unshift(vaultTokenOption)
+        options = options.filter((option) => !isVaultToken(option.id));
+        options.unshift(vaultTokenOption);
       } else {
-        const amount = vaultTokenWithAmount?.amount ?? 0n
-        const price = vaultToken.price ?? 0
-        const value = parseFloat(formatUnits(amount, vaultToken.decimals)) * price
+        const amount = vaultTokenWithAmount?.amount ?? 0n;
+        const price = vaultToken.price ?? 0;
+        const value =
+          parseFloat(formatUnits(amount, vaultToken.decimals)) * price;
 
         options.unshift({
           id: getOptionId(vaultToken),
-          content: <TokenPickerOption token={{ ...vaultToken, amount, price, value }} />,
-          onClick: () => setFormTokenAddress(vaultToken.address)
-        })
+          content: (
+            <TokenPickerOption
+              token={{ ...vaultToken, amount, price, value }}
+            />
+          ),
+          onClick: () => setFormTokenAddress(vaultToken.address),
+        });
       }
     }
 
-    return options
-  }, [zapTokenOptions, vaultToken, vaultTokenWithAmount])
+    console.log("state test  options ", options);
+
+    return options;
+  }, [zapTokenOptions, vaultToken, vaultTokenWithAmount]);
+
+  console.log("state test share ", shareInputData);
 
   useEffect(() => {
     if (
@@ -345,135 +405,161 @@ export const DepositForm = (props: DepositFormProps) => {
       shareInputData?.decimals !== undefined
     ) {
       const inputValue =
-        parseFloat(formatUnits(depositAmount, tokenInputData.decimals)) * tokenInputData.price
+        parseFloat(formatUnits(depositAmount, tokenInputData.decimals)) *
+        tokenInputData.price;
       const outputValue =
-        parseFloat(formatUnits(zapAmountOut.expected, shareInputData.decimals)) *
-        shareInputData.price
+        parseFloat(
+          formatUnits(zapAmountOut.expected, shareInputData.decimals)
+        ) * shareInputData.price;
 
       if (!!inputValue && !!outputValue) {
-        setPriceImpact((1 - inputValue / outputValue) * 100)
+        setPriceImpact((1 - inputValue / outputValue) * 100);
       } else {
-        setPriceImpact(undefined)
+        setPriceImpact(undefined);
       }
 
-      setMinReceived(zapAmountOut.min)
+      setMinReceived(zapAmountOut.min);
     } else {
-      setPriceImpact(undefined)
-      setMinReceived(undefined)
+      setPriceImpact(undefined);
+      setMinReceived(undefined);
     }
-  }, [depositAmount, zapAmountOut, tokenInputData, shareInputData])
+  }, [depositAmount, zapAmountOut, tokenInputData, shareInputData]);
 
   // console.log('form test ', { tokenInputData, shareInputData })
 
   return (
-    <div className='flex flex-col isolate'>
+    <div className="flex flex-col isolate">
       <FormProvider {...formMethods}>
         <TxFormInput
           token={tokenInputData}
-          formKey='tokenAmount'
+          formKey="tokenAmount"
           validate={{
             isNotGreaterThanBalance: (v) =>
               (!!tokenInputData &&
-                parseFloat(formatUnits(tokenInputData.amount, tokenInputData.decimals)) >=
-                  parseFloat(v)) ||
+                parseFloat(
+                  formatUnits(tokenInputData.amount, tokenInputData.decimals)
+                ) >= parseFloat(v)) ||
               !isFetchedTokenBalance ||
               !tokenWithAmount ||
-              t_errors('notEnoughTokens', { symbol: tokenInputData?.symbol ?? '?' })
+              t_errors("notEnoughTokens", {
+                symbol: tokenInputData?.symbol ?? "?",
+              }),
           }}
           onChange={handleTokenAmountChange}
           showInfoRow={showInputInfoRows}
           showMaxButton={true}
           showTokenPicker={!!ZAP_SETTINGS[vault.chainId]}
-          tokenPickerOptions={tokenPickerOptions}
+          //@ts-ignore
+          tokenPickerOptions={tokenPickerOptions.slice(2, 3)}
           fallbackLogoToken={
-            !!inputVault ? { ...inputVault.tokenData, logoURI: inputVault.tokenLogoURI } : undefined
+            !!inputVault
+              ? { ...inputVault.tokenData, logoURI: inputVault.tokenLogoURI }
+              : undefined
           }
-          className='mb-0.5 z-20'
+          className="mb-0.5 z-20"
         />
-        <TxFormInput
-          token={shareInputData}
-          formKey='shareAmount'
+        {/* <TxFormInput
+          //@ts-ignore
+          token={{ ...shareInputData, symbol: "bpUSDC" }}
+          formKey="shareAmount"
           onChange={handleShareAmountChange}
           showInfoRow={showInputInfoRows}
           priceImpact={priceImpact}
           disabled={isZapping}
           isLoading={isFetchingZapArgs}
           fallbackLogoToken={vaultToken}
-          className='my-0.5 z-10'
-          inputClassName={classNames({ '!text-pt-purple-200': isZapping })}
-          disabledCoverClassName={classNames({ '!backdrop-brightness-100': isZapping })}
-        />
+          className="my-0.5 z-10"
+          inputClassName={classNames({ "!text-pt-purple-200": isZapping })}
+          disabledCoverClassName={classNames({
+            "!backdrop-brightness-100": isZapping,
+          })}
+        /> */}
         {isZappingAndSwapping && !!depositAmount && (
-          <div className='flex flex-col p-2 text-xs text-pt-purple-100'>
-            <div className='flex gap-2 items-center'>
-              <span className='font-semibold'>{t_txModals('priceImpact')}</span>
-              <span className='h-3 grow border-b border-dashed border-pt-purple-50/30' />
+          <div className="flex flex-col p-2 text-xs text-pt-purple-100">
+            {/* <div className="flex gap-2 items-center">
+              <span className="font-semibold">{t_txModals("priceImpact")}</span>
+              <span className="h-3 grow border-b border-dashed border-pt-purple-50/30" />
               {priceImpact !== undefined ? (
-                <span>{`${priceImpact > 0 ? '+' : ''}${formatNumberForDisplay(priceImpact, {
-                  maximumFractionDigits: 2
-                })}%`}</span>
+                <span>{`${priceImpact > 0 ? "+" : ""}${formatNumberForDisplay(
+                  priceImpact,
+                  {
+                    maximumFractionDigits: 2,
+                  }
+                )}%`}</span>
               ) : (
                 <Spinner />
               )}
-            </div>
-            <div className='flex gap-2 items-center'>
-              <span className='font-semibold'>{t_txModals('minimumReceived')}</span>
-              <span className='h-3 grow border-b border-dashed border-pt-purple-50/30' />
+            </div> */}
+            {/* <div className="flex gap-2 items-center">
+              <span className="font-semibold">
+                {t_txModals("minimumReceived")}
+              </span>
+              <span className="h-3 grow border-b border-dashed border-pt-purple-50/30" />
               {!!zapAmountOut && !!shareInputData ? (
                 <span>
-                  {formatBigIntForDisplay(zapAmountOut.min, shareInputData.decimals, {
-                    maximumFractionDigits: 5
-                  })}{' '}
+                  {formatBigIntForDisplay(
+                    zapAmountOut.min,
+                    shareInputData.decimals,
+                    {
+                      maximumFractionDigits: 5,
+                    }
+                  )}{" "}
                   {shareInputData.symbol}
                 </span>
               ) : (
                 <Spinner />
               )}
-            </div>
+            </div> */}
           </div>
         )}
       </FormProvider>
     </div>
-  )
-}
+  );
+};
 
 interface TokenPickerOptionProps {
-  token: TokenWithAmount & Required<TokenWithPrice> & Partial<TokenWithLogo> & { value: number }
-  className?: string
+  token: TokenWithAmount &
+    Required<TokenWithPrice> &
+    Partial<TokenWithLogo> & { value: number };
+  className?: string;
 }
 
 const TokenPickerOption = (props: TokenPickerOptionProps) => {
-  const { token, className } = props
+  const { token, className } = props;
 
-  const { vaults } = useSelectedVaults()
+  const { vaults } = useSelectedVaults();
 
   const vault = useMemo(() => {
-    const vaultId = getVaultId(token)
-    return Object.values(vaults.vaults).find((v) => getVaultId(v) === vaultId)
-  }, [token, vaults])
+    const vaultId = getVaultId(token);
+    return Object.values(vaults.vaults).find((v) => getVaultId(v) === vaultId);
+  }, [token, vaults]);
 
   return (
     <div
       className={classNames(
-        'w-full min-w-[10rem]',
-        'flex items-center justify-between gap-8',
-        'px-2 py-1 font-semibold rounded-lg',
-        'hover:bg-pt-purple-200',
+        "w-full min-w-[10rem]",
+        "flex items-center justify-between gap-8",
+        "px-2 py-1 font-semibold rounded-lg",
+        "hover:bg-pt-purple-200",
         className
       )}
     >
-      <span className='flex items-center gap-1'>
+      <span className="flex items-center gap-1">
         <TokenIcon
           token={{ ...token, logoURI: token.logoURI ?? vault?.logoURI }}
-          fallbackToken={!!vault ? { ...vault.tokenData, logoURI: vault.tokenLogoURI } : undefined}
+          fallbackToken={
+            !!vault
+              ? { ...vault.tokenData, logoURI: vault.tokenLogoURI }
+              : undefined
+          }
         />
-        <span className='text-lg text-pt-purple-50 md:text-2xl md:text-pt-purple-600'>
+        <span className="text-lg text-pt-purple-50 md:text-2xl md:text-pt-purple-600">
           {token.symbol}
         </span>
       </span>
-      <span className='text-sm text-gray-300 md:text-lg md:text-gray-700'>
+      <span className="text-sm text-gray-300 md:text-lg md:text-gray-700">
         {getRoundedDownFormattedTokenAmount(token.amount, token.decimals)}
       </span>
     </div>
-  )
-}
+  );
+};

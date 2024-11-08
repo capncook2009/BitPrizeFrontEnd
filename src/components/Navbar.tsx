@@ -1,4 +1,5 @@
 import { Bars3Icon } from "@heroicons/react/24/outline";
+// import { usePrivy } from "@privy-io/react-auth";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { MODAL_KEYS, useIsModalOpen } from "@shared/generic-react-hooks";
 import { Logo } from "@shared/ui";
@@ -8,6 +9,9 @@ import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { ReactNode } from "react";
+// import {usePrivy} from '@privy-io/react-auth';
+
+// import TelegramLoginButton from "react-telegram-login";
 
 interface NavbarLink {
   href: string;
@@ -22,6 +26,7 @@ export const Navbar = () => {
   const { setIsModalOpen: setIsSettingsModalOpen } = useIsModalOpen(
     MODAL_KEYS.settings
   );
+  // const { login } = usePrivy();
 
   const navLinks: NavbarLink[] = [
     {
@@ -80,6 +85,17 @@ export const Navbar = () => {
             className="h-6 w-6 text-pt-purple-50 hover:text-pt-purple-200 cursor-pointer"
             onClick={() => setIsSettingsModalOpen(true)}
           /> */}
+          {/* <TelegramLoginButton
+            dataOnauth={(res: any) => console.log("telegram login res ", res)}
+            botName="bit_prize_bot"
+
+          /> */}
+          {/* <button
+            onClick={() => login({ loginMethods: ["telegram", "google"] })}
+          >
+            Login with tg
+          </button> */}
+          ;
         </div>
       </FlowbiteNavbar>
 
