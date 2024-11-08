@@ -77,8 +77,8 @@ const welcomeView = (data?: { isInvalidAddress?: boolean }) => {
   const { isInvalidAddress } = data ?? {};
 
   const imgSrc = isInvalidAddress
-    ? `${DOMAINS.hackathon}/facebook-share-image-1200-630.png` // TODO: get static welcome img with error msg
-    : `${DOMAINS.hackathon}/facebook-share-image-1200-630.png`; // TODO: get static welcome img (same as in AccountFrame)
+    ? `${DOMAINS.hackathon}/meta.png` // TODO: get static welcome img with error msg
+    : `${DOMAINS.hackathon}/meta.png`; // TODO: get static welcome img (same as in AccountFrame)
 
   return frameResponse<FrameState>({
     img: { src: imgSrc },

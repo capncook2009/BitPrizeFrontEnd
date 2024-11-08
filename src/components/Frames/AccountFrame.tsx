@@ -15,7 +15,7 @@ export const AccountFrame = (props: AccountFrameProps) => {
       {/* TODO: add "check your account" image */}
       <meta
         property="fc:frame:image"
-        content={`${DOMAINS.hackathon}/facebook-share-image-1200-630.png`}
+        content={`${DOMAINS.hackathon}/meta.png`}
       />
       <meta
         name="fc:frame:post_url"

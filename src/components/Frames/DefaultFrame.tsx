@@ -4,10 +4,7 @@ import Head from "next/head";
 export const DefaultFrame = () => (
   <Head>
     <meta property="fc:frame" content="vNext" />
-    <meta
-      property="fc:frame:image"
-      content={`${DOMAINS.hackathon}/facebook-share-image-1200-630.png`}
-    />
+    <meta property="fc:frame:image" content={`${DOMAINS.hackathon}/meta.png`} />
     <meta name="fc:frame:button:1" content="Prizes" />
     <meta name="fc:frame:button:1:action" content="link" />
     <meta

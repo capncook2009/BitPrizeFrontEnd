@@ -20,7 +20,7 @@ export const VaultFrame = (props: VaultFrameProps) => {
       <meta property="fc:frame" content="vNext" />
       <meta
         property="fc:frame:image"
-        content={`${DOMAINS.hackathon}/facebook-share-image-1200-630.png`}
+        content={`${DOMAINS.hackathon}/meta.png`}
       />
       <meta name="fc:frame:button:1" content="Vault" />
       <meta name="fc:frame:button:1:action" content="link" />
