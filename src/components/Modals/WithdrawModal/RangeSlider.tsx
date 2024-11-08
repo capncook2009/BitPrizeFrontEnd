@@ -6,7 +6,6 @@ export const RangeSlider = ({
   step = 1,
   defaultValue = 50,
   onChange,
-  label = "Range Slider",
 }) => {
   const [value, setValue] = useState(defaultValue);
 
