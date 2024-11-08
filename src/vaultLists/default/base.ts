@@ -8,7 +8,7 @@ export const baseVaults: VaultList["tokens"] = [
   //   name: 'Prize POOL',
   //   decimals: 18,
   //   symbol: 'przPOOL',
-  //   logoURI: `${DOMAINS.app}/icons/przPOOL.svg`,
+  //   logoURI: `${DOMAINS.hackathon}/icons/przPOOL.svg`,
   //   extensions: {
   //     underlyingAsset: {
   //       address: '0xd652C5425aea2Afd5fb142e120FeCf79e18fafc3',
@@ -26,7 +26,7 @@ export const baseVaults: VaultList["tokens"] = [
   //   name: 'Prize USDC',
   //   decimals: 6,
   //   symbol: 'przUSDC',
-  //   logoURI: `${DOMAINS.app}/icons/przUSDC.svg`,
+  //   logoURI: `${DOMAINS.hackathon}/icons/przUSDC.svg`,
   //   tags: ['moonwell'],
   //   extensions: {
   //     underlyingAsset: {
@@ -46,7 +46,7 @@ export const baseVaults: VaultList["tokens"] = [
   //   name: 'Prize AERO',
   //   decimals: 18,
   //   symbol: 'przAERO',
-  //   logoURI: `${DOMAINS.app}/icons/przAERO.svg`,
+  //   logoURI: `${DOMAINS.hackathon}/icons/przAERO.svg`,
   //   tags: ['moonwell'],
   //   extensions: {
   //     underlyingAsset: {
@@ -66,7 +66,7 @@ export const baseVaults: VaultList["tokens"] = [
   //   name: 'Prize cbETH',
   //   decimals: 18,
   //   symbol: 'przCBETH',
-  //   logoURI: `${DOMAINS.app}/icons/przCBETH.svg`,
+  //   logoURI: `${DOMAINS.hackathon}/icons/przCBETH.svg`,
   //   tags: ['moonwell'],
   //   extensions: {
   //     underlyingAsset: {
@@ -86,7 +86,7 @@ export const baseVaults: VaultList["tokens"] = [
   //   name: 'Prize wstETH',
   //   decimals: 18,
   //   symbol: 'przWSTETH',
-  //   logoURI: `${DOMAINS.app}/icons/przSTETH.svg`,
+  //   logoURI: `${DOMAINS.hackathon}/icons/przSTETH.svg`,
   //   tags: ['moonwell'],
   //   extensions: {
   //     underlyingAsset: {
@@ -106,7 +106,7 @@ export const baseVaults: VaultList["tokens"] = [
   //   name: 'Prize USDA',
   //   decimals: 18,
   //   symbol: 'przUSDA',
-  //   logoURI: `${DOMAINS.app}/icons/przUSDA.svg`,
+  //   logoURI: `${DOMAINS.hackathon}/icons/przUSDA.svg`,
   //   tags: ['angle'],
   //   extensions: {
   //     underlyingAsset: {
@@ -126,7 +126,7 @@ export const baseVaults: VaultList["tokens"] = [
   //   name: 'Prize WETH',
   //   decimals: 18,
   //   symbol: 'przWETH',
-  //   logoURI: `${DOMAINS.app}/icons/przWETH.svg`,
+  //   logoURI: `${DOMAINS.hackathon}/icons/przWETH.svg`,
   //   tags: ['aave'],
   //   extensions: {
   //     underlyingAsset: {
@@ -147,7 +147,7 @@ export const baseVaults: VaultList["tokens"] = [
     name: "USDC",
     decimals: 18,
     symbol: "bpUSDC",
-    logoURI: `${DOMAINS.app}/icons/przUSDC.svg`,
+    logoURI: `${DOMAINS.hackathon}/icons/przUSDC.svg`,
     tags: ["aave"],
     extensions: {
       underlyingAsset: {
@@ -168,7 +168,7 @@ export const baseVaults: VaultList["tokens"] = [
   //   name: 'Prize WETH/WELL',
   //   decimals: 18,
   //   symbol: 'przWELL/WETH',
-  //   logoURI: `${DOMAINS.app}/icons/przAERO.svg`,
+  //   logoURI: `${DOMAINS.hackathon}/icons/przAERO.svg`,
   //   tags: ['beefy', 'lp', 'aerodrome'],
   //   extensions: {
   //     underlyingAsset: {
