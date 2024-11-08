@@ -1,7 +1,7 @@
-import { VaultList } from '@shared/types'
-import { DOMAINS, NETWORK } from '@shared/utilities'
+import { VaultList } from "@shared/types";
+import { DOMAINS, NETWORK } from "@shared/utilities";
 
-export const baseVaults: VaultList['tokens'] = [
+export const baseVaults: VaultList["tokens"] = [
   // {
   //   chainId: NETWORK.base,
   //   address: '0x6B5a5c55E9dD4bb502Ce25bBfbaA49b69cf7E4dd',
@@ -143,25 +143,25 @@ export const baseVaults: VaultList['tokens'] = [
   // },
   {
     chainId: NETWORK.base,
-    address: '0xfE9d9dC1Ad824f158351B862091D33f56286Bd30',
-    name: 'BitPrize WETH',
+    address: "0xfE9d9dC1Ad824f158351B862091D33f56286Bd30",
+    name: "USDC",
     decimals: 18,
-    symbol: 'bpWETH',
-    logoURI: `${DOMAINS.app}/icons/przWETH.svg`,
-    tags: ['aave'],
+    symbol: "bpUSDC",
+    logoURI: `${DOMAINS.app}/icons/przUSDC.svg`,
+    tags: ["aave"],
     extensions: {
       underlyingAsset: {
-        address: '0x4200000000000000000000000000000000000006',
-        symbol: 'WETH',
-        name: 'Wrapped Ether'
+        address: "0x4200000000000000000000000000000000000006",
+        symbol: "WETH",
+        name: "Wrapped Ether",
       },
       yieldSource: {
-        name: 'Aave',
+        name: "Aave",
         appURI:
-          'https://app.aave.com/reserve-overview/?underlyingAsset=0x4200000000000000000000000000000000000006&marketName=proto_base_v3'
-      }
-    }
-  }
+          "https://app.aave.com/reserve-overview/?underlyingAsset=0x4200000000000000000000000000000000000006&marketName=proto_base_v3",
+      },
+    },
+  },
   // {
   //   chainId: NETWORK.base,
   //   address: '0x6428DDB6EF1818FA99552E10882D34c1db57BBcA',
@@ -205,4 +205,4 @@ export const baseVaults: VaultList['tokens'] = [
   //     }
   //   }
   // }
-]
+];

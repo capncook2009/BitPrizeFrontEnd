@@ -52,7 +52,7 @@ const getWalletConnectors = () => {
   const walletGroups: WalletList = [];
 
   const privyWallet = toPrivyWallet({
-    id: "clxva96js0039k9pb3pw2uovx",
+    id: "cm32zqjw30195xj9yhsbxz760",
     name: "Social Logins",
     iconUrl:
       "https://cdn1.iconfinder.com/data/icons/google-s-logo/150/Google_Icons-09-512.png",

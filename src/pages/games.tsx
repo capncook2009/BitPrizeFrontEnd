@@ -17,8 +17,8 @@ const dummyGames: any[] = [
   {
     id: "1",
     name: "2048",
-    lastScore: 15750,
-    highScore: 24800,
+    lastScore: 0,
+    highScore: 0,
     live: true,
     gameLink: "/games/2048/index.html",
     description:
@@ -112,7 +112,10 @@ export default function ReferralPage() {
 
   const [isOpen, setIsOpen] = useState(false);
 
-  const {} = useGameState({ userId: "", initialState: {} });
+  const { gameState, bestScore } = useGameState({
+    userId: "",
+    initialState: {},
+  });
 
   const openModal = () => {
     setIsOpen(true);
@@ -191,7 +194,7 @@ export default function ReferralPage() {
         </div> */}
 
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {dummyGames.map((game) => (
+          {dummyGames.map((game, index) => (
             <div
               key={game.id}
               className="group overflow-hidden rounded-xl bg-white shadow-sm transition-all hover:shadow-lg"
@@ -231,13 +234,17 @@ export default function ReferralPage() {
                   <div className="rounded-lg bg-gray-50 p-2 sm:p-3">
                     <p className="text-xs text-gray-500">Last Score</p>
                     <p className="text-sm font-semibold text-gray-900 sm:text-base">
-                      {game.lastScore.toLocaleString()}
+                      {index === 0
+                        ? gameState?.score
+                        : game.lastScore.toLocaleString()}
                     </p>
                   </div>
                   <div className="rounded-lg bg-indigo-50 p-2 sm:p-3">
                     <p className="text-xs text-indigo-600">High Score</p>
                     <p className="text-sm font-semibold text-indigo-600 sm:text-base">
-                      {game.highScore.toLocaleString()}
+                      {index === 0
+                        ? bestScore
+                        : game.highScore.toLocaleString()}
                     </p>
                   </div>
                 </div>
@@ -245,7 +252,7 @@ export default function ReferralPage() {
                 {/* Footer */}
                 <div className="flex items-center justify-between">
                   <span className="text-xs text-gray-500 sm:text-sm">
-                    {game.lastPlayed}
+                    {/* {game.lastPlayed} */}
                   </span>
                   <button
                     onClick={() => handleGamePlay(game.gameLink)}

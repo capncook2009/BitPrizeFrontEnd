@@ -15,6 +15,7 @@ interface UseGameStateProps {
 
 interface UseGameStateReturn {
   gameState: GameState | null;
+  bestScore: string | null;
   updateGameState: (newState: Partial<GameState>) => void;
   error: Error | null;
   isLoading: boolean;
@@ -28,13 +29,14 @@ const defaultGameState: GameState = {
 };
 
 const STORAGE_KEY = "gameState";
-// const BEST_SCORE_KEY = "bestScore";
+const BEST_SCORE_KEY = "bestScore";
 
 export const useGameState = ({
   userId,
   initialState = {},
 }: UseGameStateProps): UseGameStateReturn => {
   const [gameState, setGameState] = useState<GameState | null>(null);
+  const [bestScore, setBestScore] = useState<string | null>(null);
   const [error, setError] = useState<Error | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [syncTimeout, setSyncTimeout] = useState<NodeJS.Timeout | null>(null);
@@ -43,9 +45,13 @@ export const useGameState = ({
   useEffect(() => {
     try {
       const storedState = localStorage.getItem(STORAGE_KEY);
+      const bestScore = localStorage.getItem(BEST_SCORE_KEY);
+
       if (storedState) {
         const parsedState = JSON.parse(storedState) as GameState;
+
         setGameState(parsedState);
+        setBestScore(bestScore);
       } else {
         const newState = {
           ...defaultGameState,
@@ -112,8 +118,11 @@ export const useGameState = ({
         try {
           const newState = JSON.parse(event.newValue) as GameState;
 
+          const bestScore = localStorage.getItem(BEST_SCORE_KEY);
+
           console.log("game state test:  new state ", { newState });
           setGameState(newState);
+          setBestScore(bestScore);
           debouncedSync(newState);
         } catch (err) {
           setError(
@@ -150,6 +159,7 @@ export const useGameState = ({
 
   return {
     gameState,
+    bestScore,
     updateGameState,
     error,
     isLoading,

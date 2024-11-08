@@ -1,4 +1,4 @@
-import { Vault } from '@generationsoftware/hyperstructure-client-js'
+import { Vault } from "@generationsoftware/hyperstructure-client-js";
 import {
   useSendGenericApproveTransaction,
   useSendWithdrawZapTransaction,
@@ -10,29 +10,39 @@ import {
   useUserVaultTokenBalance,
   useVaultBalance,
   useVaultShareData,
-  useVaultTokenAddress
-} from '@generationsoftware/hyperstructure-react-hooks'
-import { useAddRecentTransaction, useChainModal, useConnectModal } from '@rainbow-me/rainbowkit'
-import { ApprovalTooltip, TransactionButton } from '@shared/react-components'
-import { Button } from '@shared/ui'
-import { ZAP_SETTINGS } from '@shared/utilities'
-import { useAtomValue } from 'jotai'
-import { useTranslations } from 'next-intl'
-import { useEffect } from 'react'
-import { isAddress, parseUnits, TransactionReceipt } from 'viem'
-import { useAccount } from 'wagmi'
-import { WithdrawModalView } from '.'
-import { isValidFormInput } from '../TxFormInput'
-import { withdrawFormShareAmountAtom, withdrawFormTokenAddressAtom } from './WithdrawForm'
+  useVaultTokenAddress,
+} from "@generationsoftware/hyperstructure-react-hooks";
+import {
+  useAddRecentTransaction,
+  useChainModal,
+  useConnectModal,
+} from "@rainbow-me/rainbowkit";
+import { ApprovalTooltip, TransactionButton } from "@shared/react-components";
+import { Button } from "@shared/ui";
+import { ZAP_SETTINGS } from "@shared/utilities";
+import { useAtomValue } from "jotai";
+import { useTranslations } from "next-intl";
+import { useEffect } from "react";
+import { isAddress, parseUnits, TransactionReceipt } from "viem";
+import { useAccount } from "wagmi";
+import { WithdrawModalView } from ".";
+import { isValidFormInput } from "../TxFormInput";
+import {
+  withdrawFormShareAmountAtom,
+  withdrawFormTokenAddressAtom,
+} from "./WithdrawForm";
 
 interface WithdrawZapTxButtonProps {
-  vault: Vault
-  modalView: string
-  setModalView: (view: WithdrawModalView) => void
-  setWithdrawTxHash: (txHash: string) => void
-  refetchUserBalances?: () => void
-  onSuccessfulApproval?: () => void
-  onSuccessfulWithdrawalWithZap?: (chainId: number, txReceipt: TransactionReceipt) => void
+  vault: Vault;
+  modalView: string;
+  setModalView: (view: WithdrawModalView) => void;
+  setWithdrawTxHash: (txHash: string) => void;
+  refetchUserBalances?: () => void;
+  onSuccessfulApproval?: () => void;
+  onSuccessfulWithdrawalWithZap?: (
+    chainId: number,
+    txReceipt: TransactionReceipt
+  ) => void;
 }
 
 export const WithdrawZapTxButton = (props: WithdrawZapTxButtonProps) => {
@@ -43,71 +53,83 @@ export const WithdrawZapTxButton = (props: WithdrawZapTxButtonProps) => {
     setWithdrawTxHash,
     refetchUserBalances,
     onSuccessfulApproval,
-    onSuccessfulWithdrawalWithZap
-  } = props
+    onSuccessfulWithdrawalWithZap,
+  } = props;
 
-  const t_common = useTranslations('Common')
-  const t_modals = useTranslations('TxModals')
-  const t_tooltips = useTranslations('Tooltips')
+  const t_common = useTranslations("Common");
+  const t_modals = useTranslations("TxModals");
+  const t_tooltips = useTranslations("Tooltips");
 
-  const { openConnectModal } = useConnectModal()
-  const { openChainModal } = useChainModal()
-  const addRecentTransaction = useAddRecentTransaction()
+  const { openConnectModal } = useConnectModal();
+  const { openChainModal } = useChainModal();
+  const addRecentTransaction = useAddRecentTransaction();
 
-  const { address: userAddress, chain, isDisconnected } = useAccount()
+  const { address: userAddress, chain, isDisconnected } = useAccount();
 
-  const formOutputTokenAddress = useAtomValue(withdrawFormTokenAddressAtom)
+  const formOutputTokenAddress = useAtomValue(withdrawFormTokenAddressAtom);
 
-  const { data: share } = useVaultShareData(vault)
+  const { data: share } = useVaultShareData(vault);
 
-  const { data: vaultTokenAddress } = useVaultTokenAddress(vault)
+  const { data: vaultTokenAddress } = useVaultTokenAddress(vault);
 
   const outputTokenAddress =
     !!formOutputTokenAddress && isAddress(formOutputTokenAddress)
       ? formOutputTokenAddress
-      : vaultTokenAddress
+      : vaultTokenAddress;
 
-  const { data: outputToken } = useToken(vault.chainId, outputTokenAddress!)
+  const { data: outputToken } = useToken(vault.chainId, outputTokenAddress!);
 
-  const zapTokenManagerAddress = ZAP_SETTINGS[vault.chainId]?.zapTokenManager
+  const zapTokenManagerAddress = ZAP_SETTINGS[vault.chainId]?.zapTokenManager;
 
   const {
     data: allowance,
     isFetched: isFetchedAllowance,
-    refetch: refetchTokenAllowance
-  } = useTokenAllowance(vault.chainId, userAddress!, zapTokenManagerAddress, vault.address)
+    refetch: refetchTokenAllowance,
+  } = useTokenAllowance(
+    vault.chainId,
+    userAddress!,
+    zapTokenManagerAddress,
+    vault.address
+  );
 
-  const { data: userVaultShareBalance, isFetched: isFetchedUserVaultShareBalance } =
-    useUserVaultShareBalance(vault, userAddress!)
+  const {
+    data: userVaultShareBalance,
+    isFetched: isFetchedUserVaultShareBalance,
+  } = useUserVaultShareBalance(vault, userAddress!);
 
   const {
     data: userOutputTokenBalance,
     isFetched: isFetchedUserOutputTokenBalance,
-    refetch: refetchUserOutputTokenBalance
-  } = useTokenBalance(vault.chainId, userAddress!, outputToken?.address!)
+    refetch: refetchUserOutputTokenBalance,
+  } = useTokenBalance(vault.chainId, userAddress!, outputToken?.address!);
 
-  const { refetch: refetchUserVaultTokenBalance } = useUserVaultTokenBalance(vault, userAddress!)
-
-  const { refetch: refetchUserVaultDelegationBalance } = useUserVaultDelegationBalance(
+  const { refetch: refetchUserVaultTokenBalance } = useUserVaultTokenBalance(
     vault,
     userAddress!
-  )
+  );
 
-  const { refetch: refetchVaultBalance } = useVaultBalance(vault)
+  const { refetch: refetchUserVaultDelegationBalance } =
+    useUserVaultDelegationBalance(vault, userAddress!);
 
-  const formShareAmount = useAtomValue(withdrawFormShareAmountAtom)
+  const { refetch: refetchVaultBalance } = useVaultBalance(vault);
+
+  const formShareAmount = useAtomValue(withdrawFormShareAmountAtom);
 
   const isValidFormShareAmount =
-    vault.decimals !== undefined ? isValidFormInput(formShareAmount, vault.decimals) : false
+    vault.decimals !== undefined
+      ? isValidFormInput(formShareAmount, vault.decimals)
+      : false;
 
-  const withdrawAmount = isValidFormShareAmount ? parseUnits(formShareAmount, vault.decimals!) : 0n
+  const withdrawAmount = isValidFormShareAmount
+    ? parseUnits(formShareAmount, vault.decimals!)
+    : 0n;
 
   const {
     isWaiting: isWaitingApproval,
     isConfirming: isConfirmingApproval,
     isSuccess: isSuccessfulApproval,
     txHash: approvalTxHash,
-    sendApproveTransaction: sendApproveTransaction
+    sendApproveTransaction: sendApproveTransaction,
   } = useSendGenericApproveTransaction(
     vault.chainId,
     vault.address,
@@ -115,11 +137,11 @@ export const WithdrawZapTxButton = (props: WithdrawZapTxButtonProps) => {
     withdrawAmount,
     {
       onSuccess: () => {
-        refetchTokenAllowance()
-        onSuccessfulApproval?.()
-      }
+        refetchTokenAllowance();
+        onSuccessfulApproval?.();
+      },
     }
-  )
+  );
 
   const {
     isWaiting: isWaitingWithdrawZap,
@@ -129,33 +151,33 @@ export const WithdrawZapTxButton = (props: WithdrawZapTxButtonProps) => {
     sendWithdrawZapTransaction,
     amountOut,
     isFetchedZapArgs,
-    isFetchingZapArgs
+    isFetchingZapArgs,
   } = useSendWithdrawZapTransaction(
     {
       address: outputToken?.address!,
-      decimals: outputToken?.decimals!
+      decimals: outputToken?.decimals!,
     },
     vault,
     withdrawAmount,
     {
       onSend: () => {
-        setModalView('waiting')
+        setModalView("waiting");
       },
       onSuccess: (txReceipt) => {
-        refetchUserOutputTokenBalance()
-        refetchUserVaultTokenBalance()
-        refetchUserVaultDelegationBalance()
-        refetchVaultBalance()
-        refetchTokenAllowance()
-        refetchUserBalances?.()
-        onSuccessfulWithdrawalWithZap?.(vault.chainId, txReceipt)
-        setModalView('success')
+        refetchUserOutputTokenBalance();
+        refetchUserVaultTokenBalance();
+        refetchUserVaultDelegationBalance();
+        refetchVaultBalance();
+        refetchTokenAllowance();
+        refetchUserBalances?.();
+        onSuccessfulWithdrawalWithZap?.(vault.chainId, txReceipt);
+        setModalView("success");
       },
       onError: () => {
-        setModalView('error')
-      }
+        setModalView("error");
+      },
     }
-  )
+  );
 
   useEffect(() => {
     if (
@@ -164,10 +186,10 @@ export const WithdrawZapTxButton = (props: WithdrawZapTxButtonProps) => {
       !isWaitingWithdrawZap &&
       !isSuccessfulWithdrawZap
     ) {
-      setWithdrawTxHash(withdrawZapTxHash)
-      setModalView('confirming')
+      setWithdrawTxHash(withdrawZapTxHash);
+      setModalView("confirming");
     }
-  }, [withdrawZapTxHash, isConfirmingWithdrawZap])
+  }, [withdrawZapTxHash, isConfirmingWithdrawZap]);
 
   const isDataFetched =
     !isDisconnected &&
@@ -184,24 +206,26 @@ export const WithdrawZapTxButton = (props: WithdrawZapTxButtonProps) => {
     !!withdrawAmount &&
     outputToken.decimals !== undefined &&
     chain?.id === vault.chainId &&
-    isFetchedZapArgs
+    isFetchedZapArgs;
 
   const approvalEnabled =
-    isDataFetched && userVaultShareBalance.amount >= withdrawAmount && isValidFormShareAmount
+    isDataFetched &&
+    userVaultShareBalance.amount >= withdrawAmount &&
+    isValidFormShareAmount;
 
   const withdrawEnabled =
     isDataFetched &&
     userVaultShareBalance.amount >= withdrawAmount &&
     allowance >= withdrawAmount &&
-    isValidFormShareAmount
+    isValidFormShareAmount;
 
   // No withdraw amount set
   if (withdrawAmount === 0n) {
     return (
-      <Button color='transparent' fullSized={true} disabled={true}>
-        {t_modals('enterAnAmount')}
+      <Button color="transparent" fullSized={true} disabled={true}>
+        {t_modals("enterAnAmount")}
       </Button>
-    )
+    );
   }
 
   // Needs approval
@@ -213,50 +237,54 @@ export const WithdrawZapTxButton = (props: WithdrawZapTxButtonProps) => {
         isTxSuccess={isSuccessfulApproval}
         write={sendApproveTransaction}
         txHash={approvalTxHash}
-        txDescription={t_modals('approvalTx', { symbol: share.symbol ?? '?' })}
+        txDescription={t_modals("approvalTx", { symbol: "Withdrawal" })}
         fullSized={true}
         disabled={!approvalEnabled}
         openConnectModal={openConnectModal}
         openChainModal={openChainModal}
         addRecentTransaction={addRecentTransaction}
-        innerClassName='flex gap-2 items-center'
+        innerClassName="flex gap-2 items-center"
         intl={{ base: t_modals, common: t_common }}
       >
-        {t_modals('approvalButton', { symbol: share.symbol ?? '?' })}
+        {t_modals("approvalButton", { symbol: "Withdrawal" })}
         <ApprovalTooltip
           tokenSymbol={share.symbol}
           intl={t_tooltips}
-          className='whitespace-normal'
+          className="whitespace-normal"
         />
       </TransactionButton>
-    )
+    );
   }
 
   // Prompt to review withdrawal
-  if (isDataFetched && modalView === 'main') {
+  if (isDataFetched && modalView === "main") {
     return (
-      <Button onClick={() => setModalView('review')} fullSized={true} disabled={!withdrawEnabled}>
-        {t_modals('reviewWithdrawal')}
+      <Button
+        onClick={() => setModalView("review")}
+        fullSized={true}
+        disabled={!withdrawEnabled}
+      >
+        {t_modals("reviewWithdrawal")}
       </Button>
-    )
+    );
   }
 
   // Fetching zap args
   if (isFetchingZapArgs) {
     return (
       <Button fullSized={true} disabled={true}>
-        {t_modals('findingZapRoute')}
+        {t_modals("findingZapRoute")}
       </Button>
-    )
+    );
   }
 
   // Zap route unavailable
   if (!isFetchingZapArgs && !amountOut) {
     return (
       <Button fullSized={true} disabled={true}>
-        {t_modals('noZapRouteFound')}
+        {t_modals("noZapRouteFound")}
       </Button>
-    )
+    );
   }
 
   // Withdraw button
@@ -267,7 +295,7 @@ export const WithdrawZapTxButton = (props: WithdrawZapTxButtonProps) => {
       isTxSuccess={isSuccessfulWithdrawZap}
       write={sendWithdrawZapTransaction}
       txHash={withdrawZapTxHash}
-      txDescription={t_modals('withdrawTx', { symbol: share?.symbol ?? '?' })}
+      txDescription={t_modals("withdrawTx", { symbol: share?.symbol ?? "?" })}
       fullSized={true}
       disabled={!withdrawEnabled}
       openConnectModal={openConnectModal}
@@ -275,7 +303,7 @@ export const WithdrawZapTxButton = (props: WithdrawZapTxButtonProps) => {
       addRecentTransaction={addRecentTransaction}
       intl={{ base: t_modals, common: t_common }}
     >
-      {t_modals('confirmWithdrawal')}
+      {t_modals("confirmWithdrawal")}
     </TransactionButton>
-  )
-}
+  );
+};
