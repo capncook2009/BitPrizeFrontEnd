@@ -6,8 +6,8 @@ class MyDocument extends Document {
     const title = "BitPrize";
     const description = "Save your dollars to win 10x !!";
     const keywords = "";
-    const ogImage = `${DOMAINS.app}/meta.png`;
-    const twitterImage = `${DOMAINS.app}/meta.png`;
+    const ogImage = `${DOMAINS.hackathon}/meta.png`;
+    const twitterImage = `${DOMAINS.hackathon}/meta.png`;
 
     return (
       <Html className="bg-pt-bg-purple-darker text-pt-purple-50 overflow-x-hidden dark">
@@ -24,7 +24,7 @@ class MyDocument extends Document {
           <meta property="og:title" content={"BitPrize"} />
           <meta property="og:description" content={description} />
           <meta property="og:site_name" content={title} />
-          <meta property="og:url" content={DOMAINS.app} />
+          <meta property="og:url" content={DOMAINS.hackathon} />
           <meta property="og:type" content="website" />
           <meta property="og:image" content={ogImage} />
           <meta property="og:rich_attachment" content="true" />
@@ -36,7 +36,7 @@ class MyDocument extends Document {
           <meta property="twitter:card" content="summary_large_image" />
           <meta property="twitter:site" content={"@g9software"} />
           <meta property="twitter:image:src" content={twitterImage} />
-          <meta property="twitter:url" content={DOMAINS.app} />
+          <meta property="twitter:url" content={DOMAINS.hackathon} />
           <meta property="twitter:creator" content={"@g9software"} />
         </Head>
         <body>
