@@ -24,34 +24,38 @@ import {
   depositFormShareAmountAtom,
   depositFormTokenAddressAtom,
 } from "../DepositForm";
+import { currentVault } from "@hooks/addresses";
 
 interface MainViewProps {
   vault: Vault;
-  prizePool: PrizePool;
+  // prizePool: PrizePool;
 }
 
 export const MainView = (props: MainViewProps) => {
-  const { vault, prizePool } = props;
+  const { vault } = props;
 
   const t_common = useTranslations("Common");
   const t_txModals = useTranslations("TxModals");
 
   const { connector } = useAccount();
 
-  const { data: share } = useVaultShareData(vault);
-  const { data: vaultTokenAddress } = useVaultTokenAddress(vault);
+  const share = currentVault.shareData;
+  const vaultTokenAddress = currentVault.tokenData.address;
+  // const { data: share } = useVaultShareData(vault);
+  // const { data: vaultTokenAddress } = useVaultTokenAddress(vault);
 
   const formTokenAddress = useAtomValue(depositFormTokenAddressAtom);
   const formShareAmount = useAtomValue(depositFormShareAmountAtom);
 
-  const tokenAddress = formTokenAddress ?? vaultTokenAddress;
+  const tokenAddress = vaultTokenAddress; //formTokenAddress ?? vaultTokenAddress;
 
-  const { data: tokenPermitSupport } = useTokenPermitSupport(
-    vault.chainId,
-    tokenAddress!
-  );
+  const tokenPermitSupport = "none";
+  // const { data: tokenPermitSupport } = useTokenPermitSupport(
+  //   vault.chainId,
+  //   tokenAddress!
+  // );
 
-  const { data: vaultExchangeRate } = useVaultExchangeRate(vault);
+  // const { data: vaultExchangeRate } = useVaultExchangeRate(vault);
 
   const { isActive: isPermitDepositsDisabled } = useMiscSettings(
     "permitDepositsDisabled"
@@ -69,9 +73,7 @@ export const MainView = (props: MainViewProps) => {
     ? lower(formTokenAddress) === DOLPHIN_ADDRESS
       ? ["depositWithZap", "withdraw"]
       : ["approve", "depositWithZap", "withdraw"]
-    : tokenPermitSupport === "eip2612" &&
-      walletSupportsPermit(connector?.id) &&
-      !isPermitDepositsDisabled
+    : false && walletSupportsPermit(connector?.id) && !isPermitDepositsDisabled
     ? ["depositWithPermit", "withdraw"]
     : ["approve", "deposit", "withdraw"];
 
@@ -98,7 +100,7 @@ export const MainView = (props: MainViewProps) => {
         className="!py-1 mx-auto"
       />
       {/* TODO: add flow for when exchange rate cannot be found */}
-      {!!vaultExchangeRate && (
+      {true && (
         <>
           <DepositForm vault={vault} showInputInfoRows={true} />
           <div className="flex flex-col gap-4 mx-auto md:flex-row md:gap-9"></div>

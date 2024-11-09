@@ -39,7 +39,6 @@ import { useAccount } from "wagmi";
 import { ZAP_PRIORITIES } from "@constants/config";
 import { useZapTokenOptions } from "@hooks/useZapTokenOptions";
 import { isValidFormInput, TxFormInput, TxFormValues } from "../TxFormInput";
-import { RangeSlider } from "./RangeSlider";
 
 export const withdrawFormShareAmountAtom = atom<string>("");
 

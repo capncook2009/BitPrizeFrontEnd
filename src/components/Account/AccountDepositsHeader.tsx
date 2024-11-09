@@ -3,10 +3,12 @@ import { Spinner } from "@shared/ui";
 import { lower, NETWORK, shorten } from "@shared/utilities";
 import classNames from "classnames";
 import { useTranslations } from "next-intl";
-import { Address } from "viem";
+import { Address, formatUnits } from "viem";
 import { useAccount, useEnsName } from "wagmi";
 import { WALLET_NAMES } from "@constants/config";
 import { useUserTotalBalance } from "@hooks/useUserTotalBalance";
+import { useVaultDataReader } from "@hooks/useVaultDataReader";
+import { currentVault } from "@hooks/addresses";
 
 interface AccountDepositsHeaderProps {
   address?: Address;
@@ -21,8 +23,8 @@ export const AccountDepositsHeader = (props: AccountDepositsHeaderProps) => {
   const { address: _userAddress } = useAccount();
   const userAddress = address ?? _userAddress;
 
-  const isExternalUser =
-    !!address && address.toLowerCase() !== _userAddress?.toLowerCase();
+  const vault: any = currentVault;
+  const { userDeposits }: any = useVaultDataReader(userAddress, vault);
 
   const {
     data: totalBalance,
@@ -43,34 +45,31 @@ export const AccountDepositsHeader = (props: AccountDepositsHeaderProps) => {
       )}
     >
       <span className="text-sm text-pt-purple-100 md:text-base">
-        {isExternalUser
+        {/* {isExternalUser
           ? t("externalAccountDeposits", {
               account:
                 WALLET_NAMES[lower(address)]?.name ??
                 ensName ??
                 shorten(address),
             })
-          : t("yourDeposits")}
+          : t("yourDeposits")} */}
+        {t("yourDeposits")}
+      </span>
+
+      <span className="text-[1.75rem] font-grotesk font-medium md:text-4xl">
+        {!!userAddress && userDeposits !== undefined ? (
+          formatUnits(userDeposits, 18)
+        ) : (
+          <Spinner />
+        )}{" "}
+        USDC
       </span>
 
       <span className="text-sm text-pt-purple-100 md:text-base">
-        Collected BITZ
+        Collected Points
       </span>
       <span className="text-[1.75rem] font-grotesk font-medium md:text-4xl">
         {!userData?.points ? 0 : userData?.points}
-      </span>
-      <span className="text-[1.75rem] font-grotesk font-medium md:text-4xl">
-        {isFetchedTotalBalance &&
-        !!userAddress &&
-        totalBalance !== undefined ? (
-          <CurrencyValue
-            baseValue={totalBalance}
-            countUp={true}
-            fallback={<Spinner />}
-          />
-        ) : (
-          <Spinner />
-        )}
       </span>
     </div>
   );

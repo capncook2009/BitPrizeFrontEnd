@@ -24,6 +24,11 @@ import {
   withdrawZapMinReceivedAtom,
   withdrawZapPriceImpactAtom,
 } from "../WithdrawForm";
+import { baseSepolia } from "viem/chains";
+import { useAccount, useBalance } from "wagmi";
+import { getRoundedDownFormattedTokenAmount } from "src/utils";
+import { useVaultDataReader } from "@hooks/useVaultDataReader";
+import { currentVault } from "@hooks/addresses";
 
 interface ReviewViewProps {
   vault: Vault;
@@ -78,33 +83,30 @@ const BasicWithdrawForm = (props: BasicWithdrawFormProps) => {
   const formTokenAddress = useAtomValue(withdrawFormTokenAddressAtom);
   const formTokenAmount = useAtomValue(withdrawFormTokenAmountAtom);
 
-  const withdrawZapPriceImpact = useAtomValue(withdrawZapPriceImpactAtom);
-  const withdrawZapMinReceived = useAtomValue(withdrawZapMinReceivedAtom);
+  // const withdrawZapPriceImpact = useAtomValue(withdrawZapPriceImpactAtom);
+  // const withdrawZapMinReceived = useAtomValue(withdrawZapMinReceivedAtom);
 
-  const { data: vaultTokenAddress } = useVaultTokenAddress(vault);
+  // const { data: vaultTokenAddress } = useVaultTokenAddress(vault);
 
-  const tokenAddress = formTokenAddress ?? vaultTokenAddress;
+  const tokenAddress = vault.tokenData?.address; //formTokenAddress ?? vaultTokenAddress;
   const { data: token } = useToken(vault.chainId, tokenAddress!);
 
-  const { data: share } = useVaultSharePrice(vault);
+  // const { data: share } = useVaultSharePrice(vault);
 
-  if (!share || !token) {
-    return <></>;
-  }
+  // if (!share || !token) {
+  //   return <></>;
+  // }
 
-  const shareInfo = {
-    ...share,
-    amount: formShareAmount,
-    logoURI: vault.logoURI,
-  };
+  // const shareInfo = {
+  //   ...share,
+  //   amount: formShareAmount,
+  //   logoURI: vault.logoURI,
+  // };
 
-  const tokenInfo = {
+  const tokenInfo: any = {
     ...token,
     amount: formTokenAmount,
-    logoURI:
-      !!vaultTokenAddress && lower(token.address) === lower(vaultTokenAddress)
-        ? vault.tokenLogoURI
-        : undefined,
+    logoURI: vault.tokenLogoURI,
   };
 
   return (
@@ -115,7 +117,7 @@ const BasicWithdrawForm = (props: BasicWithdrawFormProps) => {
         className='mb-0.5'
       /> */}
       <BasicWithdrawFormInput token={tokenInfo} className="my-0.5" />
-      {!!withdrawZapMinReceived && (
+      {true && (
         <div className="flex flex-col p-2 text-xs text-pt-purple-100">
           <div className="flex gap-2 items-center">
             {/* <span className="font-semibold">{t_txModals("priceImpact")}</span> */}
@@ -158,6 +160,10 @@ interface BasicWithdrawFormInputProps {
 const BasicWithdrawFormInput = (props: BasicWithdrawFormInputProps) => {
   const { token, fallbackLogoTokenAddress, className } = props;
 
+  const { address: userAddress } = useAccount();
+  const vault: any = currentVault;
+  const { userDeposits }: any = useVaultDataReader(userAddress, vault);
+
   return (
     <div
       className={classNames(
@@ -170,7 +176,10 @@ const BasicWithdrawFormInput = (props: BasicWithdrawFormInputProps) => {
           title={token.amount}
           className="text-lg font-semibold bg-transparent text-pt-purple-50 whitespace-nowrap overflow-hidden overflow-ellipsis md:text-2xl"
         >
-          {token.amount}
+          {getRoundedDownFormattedTokenAmount(
+            userDeposits || 0n,
+            token.decimals
+          )}
         </span>
         <div className="flex shrink-0 items-center gap-1">
           <TokenIcon

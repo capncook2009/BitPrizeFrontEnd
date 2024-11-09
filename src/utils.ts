@@ -17,6 +17,7 @@ import {
   WALLET_STATS_API_URL,
   WALLETS,
 } from "@constants/config";
+import { baseSepolia } from "viem/chains";
 
 /**
  * Returns a Wagmi config with the given networks and RPCs
@@ -33,12 +34,11 @@ export const createCustomWagmiConfig = (
   ) as any as [Chain, ...Chain[]];
 
   return createConfig({
-    chains: supportedNetworks,
+    chains: [baseSepolia],
     connectors: getWalletConnectors(),
-    transports: getNetworkTransports(
-      supportedNetworks.map((network) => network?.id),
-      { useCustomRPCs: options?.useCustomRPCs }
-    ),
+    transports: {
+      [baseSepolia.id]: http(),
+    },
     batch: { multicall: { batchSize: 1_024 * 1_024 } },
     ssr: true,
   });

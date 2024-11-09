@@ -1,34 +1,46 @@
-import { Vault } from '@generationsoftware/hyperstructure-client-js'
+import { Vault } from "@generationsoftware/hyperstructure-client-js";
 import {
-  useSendApproveTransaction,
+  // useSendApproveTransaction,
   useSendDepositTransaction,
-  useTokenAllowance,
+  // useTokenAllowance,
   useTokenBalance,
   useUserVaultDelegationBalance,
   useUserVaultTokenBalance,
   useVaultBalance,
-  useVaultTokenData
-} from '@generationsoftware/hyperstructure-react-hooks'
-import { useAddRecentTransaction, useChainModal, useConnectModal } from '@rainbow-me/rainbowkit'
-import { ApprovalTooltip, TransactionButton } from '@shared/react-components'
-import { Button } from '@shared/ui'
-import { useAtomValue } from 'jotai'
-import { useTranslations } from 'next-intl'
-import { useEffect } from 'react'
-import { Address, parseUnits, TransactionReceipt } from 'viem'
-import { useAccount } from 'wagmi'
-import { DepositModalView } from '.'
-import { isValidFormInput } from '../TxFormInput'
-import { depositFormTokenAmountAtom } from './DepositForm'
+  // useVaultTokenData,
+} from "@generationsoftware/hyperstructure-react-hooks";
+import {
+  useAddRecentTransaction,
+  useChainModal,
+  useConnectModal,
+} from "@rainbow-me/rainbowkit";
+import { ApprovalTooltip, TransactionButton } from "@shared/react-components";
+import { Button } from "@shared/ui";
+import { useAtomValue } from "jotai";
+import { useTranslations } from "next-intl";
+import { useEffect } from "react";
+import { Address, parseUnits, TransactionReceipt } from "viem";
+import { useAccount, useBalance } from "wagmi";
+import { DepositModalView } from ".";
+import { isValidFormInput } from "../TxFormInput";
+import { depositFormTokenAmountAtom } from "./DepositForm";
+import { currentVault } from "@hooks/addresses";
+import { useTokenAllowance } from "@hooks/useTokenAllowance";
+import { useApprove } from "@hooks/useApprove";
+import { useVaultDeposit } from "@hooks/useVaultDeposit";
+import { useVaultDataReader } from "@hooks/useVaultDataReader";
 
 interface DepositTxButtonProps {
-  vault: Vault
-  modalView: string
-  setModalView: (view: DepositModalView) => void
-  setDepositTxHash: (txHash: string) => void
-  refetchUserBalances?: () => void
-  onSuccessfulApproval?: () => void
-  onSuccessfulDeposit?: (chainId: number, txReceipt: TransactionReceipt) => void
+  vault: Vault;
+  modalView: string;
+  setModalView: (view: DepositModalView) => void;
+  setDepositTxHash: (txHash: string) => void;
+  refetchUserBalances?: () => void;
+  onSuccessfulApproval?: () => void;
+  onSuccessfulDeposit?: (
+    chainId: number,
+    txReceipt: TransactionReceipt
+  ) => void;
 }
 
 export const DepositTxButton = (props: DepositTxButtonProps) => {
@@ -39,134 +51,190 @@ export const DepositTxButton = (props: DepositTxButtonProps) => {
     setDepositTxHash,
     refetchUserBalances,
     onSuccessfulApproval,
-    onSuccessfulDeposit
-  } = props
+    onSuccessfulDeposit,
+  } = props;
 
-  const t_common = useTranslations('Common')
-  const t_modals = useTranslations('TxModals')
-  const t_tooltips = useTranslations('Tooltips')
+  const t_common = useTranslations("Common");
+  const t_modals = useTranslations("TxModals");
+  const t_tooltips = useTranslations("Tooltips");
 
-  const { openConnectModal } = useConnectModal()
-  const { openChainModal } = useChainModal()
-  const addRecentTransaction = useAddRecentTransaction()
+  const { openConnectModal } = useConnectModal();
+  const { openChainModal } = useChainModal();
+  const addRecentTransaction = useAddRecentTransaction();
 
-  const { address: userAddress, chain, isDisconnected } = useAccount()
+  const { address: userAddress, chain, isDisconnected } = useAccount();
 
-  const { data: tokenData } = useVaultTokenData(vault)
+  const { refetch } = useVaultDataReader(userAddress, vault);
+
+  // const { data: tokenData } = useVaultTokenData(vault)
+  // const vault: any = currentVault;
   //:todo fix decimals
-  const decimals = vault.decimals ?? tokenData?.decimals
+  const decimals = vault?.decimals;
 
+  // const {
+  //   data: allowance,
+  //   isFetched: isFetchedAllowance,
+  //   refetch: refetchTokenAllowance,
+  // } = useTokenAllowance(
+  //   vault.chainId,
+  //   userAddress as Address,
+  //   vault.address,
+  //   vault.tokenData?.address as Address
+  // );
   const {
-    data: allowance,
+    allowance,
     isFetched: isFetchedAllowance,
-    refetch: refetchTokenAllowance
-  } = useTokenAllowance(
-    vault.chainId,
-    userAddress as Address,
-    vault.address,
-    tokenData?.address as Address
-  )
+    refetch: refetchTokenAllowance,
+  } = useTokenAllowance(userAddress, vault);
+
+  console.log("deposit test allowance ", { allowance, isFetchedAllowance });
+
+  // const {
+  //   data: userTokenBalance,
+  //   isFetched: isFetchedUserTokenBalance,
+  //   refetch: refetchUserTokenBalance,
+  // } = useTokenBalance(
+  //   vault.chainId,
+  //   userAddress as Address,
+  //   vault?.tokenAddress as Address
+  // );
 
   const {
     data: userTokenBalance,
     isFetched: isFetchedUserTokenBalance,
-    refetch: refetchUserTokenBalance
-  } = useTokenBalance(vault.chainId, userAddress as Address, tokenData?.address as Address)
+    refetch: refetchUserTokenBalance,
+  } = useBalance({
+    chainId: vault.chainId,
+    address: userAddress as Address,
+    token: vault?.tokenAddress as Address,
+  });
 
   const { refetch: refetchUserVaultTokenBalance } = useUserVaultTokenBalance(
     vault,
     userAddress as Address
-  )
+  );
 
-  const { refetch: refetchUserVaultDelegationBalance } = useUserVaultDelegationBalance(
-    vault,
-    userAddress as Address
-  )
+  const { refetch: refetchUserVaultDelegationBalance } =
+    useUserVaultDelegationBalance(vault, userAddress as Address);
 
-  const { refetch: refetchVaultBalance } = useVaultBalance(vault)
+  const { refetch: refetchVaultBalance } = useVaultBalance(vault);
 
-  const formTokenAmount = useAtomValue(depositFormTokenAmountAtom)
+  const formTokenAmount = useAtomValue(depositFormTokenAmountAtom);
 
   const isValidFormTokenAmount =
-    decimals !== undefined ? isValidFormInput(formTokenAmount, decimals) : false
+    decimals !== undefined
+      ? isValidFormInput(formTokenAmount, decimals)
+      : false;
 
   const depositAmount = isValidFormTokenAmount
     ? parseUnits(formTokenAmount, decimals as number)
-    : 0n
+    : 0n;
 
   const {
-    isWaiting: isWaitingApproval,
-    isConfirming: isConfirmingApproval,
-    isSuccess: isSuccessfulApproval,
-    txHash: approvalTxHash,
-    sendApproveTransaction: sendApproveTransaction
-  } = useSendApproveTransaction(depositAmount, vault, {
-    onSuccess: () => {
-      refetchTokenAllowance()
-      onSuccessfulApproval?.()
-    }
-  })
-
-  const {
-    isWaiting: isWaitingDeposit,
-    isConfirming: isConfirmingDeposit,
-    isSuccess: isSuccessfulDeposit,
-    txHash: depositTxHash,
-    sendDepositTransaction
-  } = useSendDepositTransaction(depositAmount, vault, {
-    onSend: () => {
-      setModalView('waiting')
-    },
-    onSuccess: (txReceipt) => {
-      refetchUserTokenBalance()
-      refetchUserVaultTokenBalance()
-      refetchUserVaultDelegationBalance()
-      refetchVaultBalance()
-      refetchTokenAllowance()
-      refetchUserBalances?.()
-      onSuccessfulDeposit?.(vault.chainId, txReceipt)
-      setModalView('success')
-    },
-    onError: () => {
-      setModalView('error')
-    }
-  })
+    isWaitingApproval,
+    isConfirmingApproval,
+    isSuccessfulApproval,
+    trxHash: approvalTxHash,
+    approve: sendApproveTransaction,
+  } = useApprove(depositAmount, vault);
 
   useEffect(() => {
-    if (!!depositTxHash && isConfirmingDeposit && !isWaitingDeposit && !isSuccessfulDeposit) {
-      setDepositTxHash(depositTxHash)
-      setModalView('confirming')
+    refetchTokenAllowance();
+  }, [isConfirmingApproval, isSuccessfulApproval, depositAmount]);
+
+  // const {
+  //   isWaiting: isWaitingDeposit,
+  //   isConfirming: isConfirmingDeposit,
+  //   isSuccess: isSuccessfulDeposit,
+  //   txHash: depositTxHash,
+  //   sendDepositTransaction,
+  // } = useSendDepositTransaction(depositAmount, vault, {
+  //   onSend: () => {
+  //     setModalView("waiting");
+  //   },
+  //   onSuccess: (txReceipt) => {
+  //     refetchUserTokenBalance();
+  //     refetchUserVaultTokenBalance();
+  //     refetchUserVaultDelegationBalance();
+  //     refetchVaultBalance();
+  //     refetchTokenAllowance();
+  //     refetchUserBalances?.();
+  //     onSuccessfulDeposit?.(vault.chainId, txReceipt);
+  //     setModalView("success");
+  //   },
+  //   onError: () => {
+  //     setModalView("error");
+  //   },
+  // });
+
+  const {
+    isWaitingDeposit,
+    isConfirmingDeposit,
+    isSuccessfulDeposit,
+    depositTxHash,
+    deposit: sendDepositTransaction,
+  } = useVaultDeposit(vault.address);
+
+  useEffect(() => {
+    if (
+      !!depositTxHash &&
+      isConfirmingDeposit &&
+      !isWaitingDeposit &&
+      !isSuccessfulDeposit
+    ) {
+      setDepositTxHash(depositTxHash);
+      setModalView("confirming");
     }
-  }, [depositTxHash, isConfirmingDeposit])
+
+    if (isSuccessfulDeposit) {
+      refetchUserTokenBalance();
+      refetchUserVaultTokenBalance();
+      refetchUserVaultDelegationBalance();
+      refetchVaultBalance();
+      refetchTokenAllowance();
+      refetchUserBalances?.();
+      // onSuccessfulDeposit?.(vault.chainId, txReceipt);
+      setModalView("success");
+
+      setTimeout(() => {
+        refetch();
+      }, 2000);
+      setTimeout(() => {
+        refetch();
+      }, 4000);
+    }
+  }, [depositTxHash, isConfirmingDeposit]);
 
   const isDataFetched =
     !isDisconnected &&
     !!userAddress &&
-    !!tokenData &&
+    // !!tokenData &&
     isFetchedUserTokenBalance &&
     !!userTokenBalance &&
     isFetchedAllowance &&
     allowance !== undefined &&
     !!depositAmount &&
     decimals !== undefined &&
-    chain?.id === vault.chainId
+    chain?.id === vault.chainId;
 
   const approvalEnabled =
-    isDataFetched && userTokenBalance.amount >= depositAmount && isValidFormTokenAmount
+    isDataFetched &&
+    userTokenBalance.value >= depositAmount &&
+    isValidFormTokenAmount;
 
   const depositEnabled =
     isDataFetched &&
-    userTokenBalance.amount >= depositAmount &&
+    userTokenBalance.value >= depositAmount &&
     allowance >= depositAmount &&
-    isValidFormTokenAmount
+    isValidFormTokenAmount;
 
   // No deposit amount set
   if (depositAmount === 0n) {
     return (
-      <Button color='transparent' fullSized={true} disabled={true}>
-        {t_modals('enterAnAmount')}
+      <Button color="transparent" fullSized={true} disabled={true}>
+        {t_modals("enterAnAmount")}
       </Button>
-    )
+    );
   }
 
   // Needs approval
@@ -178,35 +246,45 @@ export const DepositTxButton = (props: DepositTxButtonProps) => {
         isTxSuccess={isSuccessfulApproval}
         write={sendApproveTransaction}
         txHash={approvalTxHash}
-        txDescription={t_modals('approvalTx', { symbol: tokenData?.symbol ?? '?' })}
+        txDescription={t_modals("approvalTx", {
+          symbol: vault.tokenData?.symbol ?? "?",
+        })}
         fullSized={true}
         disabled={false}
         openConnectModal={openConnectModal}
         openChainModal={openChainModal}
         addRecentTransaction={addRecentTransaction}
-        innerClassName='flex gap-2 items-center'
+        innerClassName="flex gap-2 items-center"
         intl={{ base: t_modals, common: t_common }}
       >
-        {t_modals('approvalButton', { symbol: tokenData?.symbol ?? '?' })}
+        {t_modals("approvalButton", { symbol: vault.tokenData?.symbol ?? "?" })}
         <ApprovalTooltip
-          tokenSymbol={tokenData.symbol}
+          tokenSymbol={vault?.tokenData?.symbol || ""}
           intl={t_tooltips}
-          className='whitespace-normal'
+          className="whitespace-normal"
         />
       </TransactionButton>
-    )
+    );
   }
 
   // Prompt to review deposit
-  if (isDataFetched && modalView === 'main') {
+  if (isDataFetched && modalView === "main") {
     return (
-      <Button onClick={() => setModalView('review')} fullSized={true} disabled={false}>
-        {t_modals('reviewDeposit')}
+      <Button
+        onClick={() => setModalView("review")}
+        fullSized={true}
+        disabled={false}
+      >
+        {t_modals("reviewDeposit")}
       </Button>
-    )
+    );
   }
 
-  console.log('trx test ', { sendDepositTransaction, isWaitingDeposit, isConfirmingDeposit })
+  console.log("trx test ", {
+    sendDepositTransaction,
+    isWaitingDeposit,
+    isConfirmingDeposit,
+  });
 
   // Deposit button
   return (
@@ -214,9 +292,11 @@ export const DepositTxButton = (props: DepositTxButtonProps) => {
       chainId={vault.chainId}
       isTxLoading={isWaitingDeposit || isConfirmingDeposit}
       isTxSuccess={isSuccessfulDeposit}
-      write={sendDepositTransaction}
+      write={() => sendDepositTransaction(depositAmount)}
       txHash={depositTxHash}
-      txDescription={t_modals('depositTx', { symbol: tokenData?.symbol ?? '?' })}
+      txDescription={t_modals("depositTx", {
+        symbol: vault.tokenData?.symbol ?? "?",
+      })}
       fullSized={true}
       disabled={false}
       openConnectModal={openConnectModal}
@@ -224,7 +304,7 @@ export const DepositTxButton = (props: DepositTxButtonProps) => {
       addRecentTransaction={addRecentTransaction}
       intl={{ base: t_modals, common: t_common }}
     >
-      {t_modals('confirmDeposit')}
+      {t_modals("confirmDeposit")}
     </TransactionButton>
-  )
-}
+  );
+};

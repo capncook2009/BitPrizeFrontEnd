@@ -1,50 +1,58 @@
-import { Vault } from '@generationsoftware/hyperstructure-client-js'
-import { useVaultBalance, useVaultShareData } from '@generationsoftware/hyperstructure-react-hooks'
-import { TokenAmount, TokenValueAndAmount } from '@shared/react-components'
-import { Spinner } from '@shared/ui'
-import classNames from 'classnames'
-import { formatUnits } from 'viem'
+import { Vault } from "@generationsoftware/hyperstructure-client-js";
+import {
+  useVaultBalance,
+  useVaultShareData,
+} from "@generationsoftware/hyperstructure-react-hooks";
+import { useVaultDataReader } from "@hooks/useVaultDataReader";
+import { TokenAmount, TokenValueAndAmount } from "@shared/react-components";
+import { Spinner } from "@shared/ui";
+import { formatBigIntForDisplay } from "@shared/utilities";
+import classNames from "classnames";
+import { formatUnits } from "viem";
+import { useAccount } from "wagmi";
 
 interface VaultTotalDepositsProps {
-  vault: Vault
-  className?: string
-  valueClassName?: string
-  amountClassName?: string
+  vault: Vault;
+  className?: string;
+  valueClassName?: string;
+  amountClassName?: string;
+  totalDeposits?: any;
 }
 
 export const VaultTotalDeposits = (props: VaultTotalDepositsProps) => {
-  const { vault, className, valueClassName, amountClassName } = props
+  const { vault, className, valueClassName, amountClassName, totalDeposits } =
+    props;
 
-  const { data: shareData } = useVaultShareData(vault)
+  const { data: shareData } = useVaultShareData(vault);
 
-  const { data: totalDeposits, isFetched: isFetchedTotalDeposits } = useVaultBalance(vault)
+  // if (!isFetchedTotalDeposits) {
+  //   return <Spinner />
+  // }
 
-  if (!isFetchedTotalDeposits) {
-    return <Spinner />
+  if (!totalDeposits) {
+    return <>?</>;
   }
 
-  if (totalDeposits === undefined) {
-    return <>?</>
-  }
-
-  if (totalDeposits.amount === 0n && !!shareData && shareData.totalSupply > 0n) {
+  if (totalDeposits === "0" && !!shareData && shareData.totalSupply > 0n) {
     return (
-      <span className={classNames('text-xs md:text-sm', className, amountClassName)}>
-        <TokenAmount token={{ ...shareData, amount: shareData.totalSupply }} hideZeroes={true} />
+      <span
+        className={classNames("text-xs md:text-sm", className, amountClassName)}
+      >
+        <TokenAmount
+          token={{ ...shareData, amount: shareData.totalSupply }}
+          hideZeroes={true}
+        />
       </span>
-    )
+    );
   }
 
-  const shiftedAmount = parseFloat(formatUnits(totalDeposits.amount, totalDeposits.decimals))
+  //@ts-ignore
+  const shiftedAmount = formatUnits(totalDeposits, vault.decimals);
 
+  console.log("deposit test ", { shiftedAmount });
   return (
-    <TokenValueAndAmount
-      token={totalDeposits}
-      className={className}
-      valueClassName={classNames('text-sm md:text-base', valueClassName)}
-      amountClassName={classNames('text-xs md:text-sm', amountClassName)}
-      valueOptions={{ hideZeroes: true, shortenMillions: true }}
-      amountOptions={shiftedAmount > 1e3 ? { hideZeroes: true } : { maximumFractionDigits: 2 }}
-    />
-  )
-}
+    <span className={classNames("text-pt-purple-200", amountClassName)}>
+      {formatBigIntForDisplay(totalDeposits, 18)} {vault.tokenData?.symbol}
+    </span>
+  );
+};

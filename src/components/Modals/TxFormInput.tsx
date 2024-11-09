@@ -14,6 +14,8 @@ import { formatUnits } from "viem";
 import { NATIVE_ASSET_IGNORE_AMOUNT } from "@constants/config";
 import { useEffect } from "react";
 import { RangeSlider } from "./WithdrawModal/RangeSlider";
+import { useAccount, useBalance } from "wagmi";
+import { baseSepolia } from "viem/chains";
 
 export interface TxFormValues {
   tokenAmount: string;
@@ -89,10 +91,21 @@ export const TxFormInput = (props: TxFormInputProps) => {
     );
   }
 
-  const amountValue =
-    isValidFormInput(formAmount, token.decimals) && !!token.price
-      ? Number(formAmount) * token.price
-      : 0;
+  // const amountValue =
+  //   isValidFormInput(formAmount, token.decimals) && !!token.price
+  //     ? Number(formAmount) * token.price
+  //     : 0;
+
+  const { address } = useAccount();
+
+  const { data: amountValue } = useBalance({
+    address: address,
+    token: token.address,
+    unit: "ether",
+    chainId: baseSepolia.id,
+  });
+
+  console.log("balance test ", { amountValue, address });
 
   const error =
     !!errors[formKey]?.message && typeof errors[formKey]?.message === "string"
@@ -163,11 +176,11 @@ export const TxFormInput = (props: TxFormInputProps) => {
     </div>
   );
 
-  const formattedPriceImpact =
-    priceImpact !== undefined &&
-    `${priceImpact > 0 ? "+" : ""}${formatNumberForDisplay(priceImpact, {
-      maximumFractionDigits: 2,
-    })}%`;
+  const formattedPriceImpact = 0.001;
+  // priceImpact !== undefined &&
+  // `${priceImpact > 0 ? "+" : ""}${formatNumberForDisplay(priceImpact, {
+  //   maximumFractionDigits: 2,
+  // })}%`;
 
   // const [percentSelected, setPercent] = useState(0);
   // const handleRange = (value: any) => {
@@ -210,7 +223,10 @@ export const TxFormInput = (props: TxFormInputProps) => {
           />
         )}
         {formKey !== "tokenAmount" && (
-          <CurrencyValue baseValue={amountValue} fallback={<></>} />
+          <CurrencyValue
+            baseValue={!amountValue ? "0" : amountValue?.value.toString()}
+            fallback={<></>}
+          />
         )}
         {(disabled || isLoading) && (
           <div
@@ -249,12 +265,16 @@ export const TxFormInput = (props: TxFormInputProps) => {
       {showInfoRow && (
         <div className="flex justify-between gap-6 text-xs text-pt-purple-100 md:text-base">
           <div className={classNames({ "-z-20": disabled || isLoading })}>
-            <CurrencyValue baseValue={amountValue} fallback={<></>} />{" "}
+            {/* <CurrencyValue
+              baseValue={!amountValue ? "0" : amountValue?.value.toString()}
+              baseCurrency="usd"
+              fallback={<></>}
+            />{" "}
             {priceImpact !== undefined && (
               <span className="text-pt-purple-300">
                 ({formattedPriceImpact})
               </span>
-            )}
+            )} */}
           </div>
           <div className="flex gap-1 ml-auto">
             {formKey === "tokenAmount" && (

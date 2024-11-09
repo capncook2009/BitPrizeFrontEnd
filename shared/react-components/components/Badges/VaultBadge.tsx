@@ -1,15 +1,15 @@
 import { Vault } from "@generationsoftware/hyperstructure-client-js";
 import {
   useCachedVaultLists,
-  useVaultShareData,
-  useVaultTokenAddress,
+  // useVaultShareData,
+  // useVaultTokenAddress,
 } from "@generationsoftware/hyperstructure-react-hooks";
 import { VaultList } from "@shared/types";
 import { getVaultId, lower, NETWORK } from "@shared/utilities";
 import classNames from "classnames";
 import { useMemo } from "react";
-import { TOKEN_LOGO_OVERRIDES } from "../../constants";
-import { NetworkIcon } from "../Icons/NetworkIcon";
+// import { TOKEN_LOGO_OVERRIDES } from "../../constants";
+// import { NetworkIcon } from "../Icons/NetworkIcon";
 import { TokenIcon } from "../Icons/TokenIcon";
 
 export interface VaultBadgeProps {
@@ -37,23 +37,23 @@ export const VaultBadge = (props: VaultBadgeProps) => {
     yieldSourceClassName,
   } = props;
 
-  const { data: shareData } = useVaultShareData(vault);
-  const { data: tokenAddress } = useVaultTokenAddress(vault);
+  // const { data: shareData } = useVaultShareData(vault);
+  // const { data: tokenAddress } = useVaultTokenAddress(vault);
 
-  const { cachedVaultLists } = useCachedVaultLists();
+  // const { cachedVaultLists } = useCachedVaultLists();
 
-  const vaultInfo = useMemo(() => {
-    const vaultLists = Object.values(cachedVaultLists).filter(
-      (list) => !!list
-    ) as VaultList[];
-    const allVaultInfo = vaultLists
-      .map((list) => list.tokens)
-      .reduce((a, b) => [...a, ...b], []);
-    return allVaultInfo.find((vaultInfo) => getVaultId(vaultInfo) === vault.id);
-  }, [vault, cachedVaultLists]);
+  // const vaultInfo = useMemo(() => {
+  //   const vaultLists = Object.values(cachedVaultLists).filter(
+  //     (list) => !!list
+  //   ) as VaultList[];
+  //   const allVaultInfo = vaultLists
+  //     .map((list) => list.tokens)
+  //     .reduce((a, b) => [...a, ...b], []);
+  //   return allVaultInfo.find((vaultInfo) => getVaultId(vaultInfo) === vault.id);
+  // }, [vault, cachedVaultLists]);
 
-  const isLogoOverridden =
-    !!TOKEN_LOGO_OVERRIDES[vault.chainId as NETWORK]?.[lower(vault.address)];
+  // const isLogoOverridden =
+  //   !!TOKEN_LOGO_OVERRIDES[vault.chainId as NETWORK]?.[lower(vault.address)];
 
   return (
     <div
@@ -69,13 +69,13 @@ export const VaultBadge = (props: VaultBadgeProps) => {
       <div className="relative pb-1 shrink-0">
         <TokenIcon
           token={{
-            ...shareData,
-            ...vault,
-            address:
-              !!vault.logoURI || !!vaultInfo?.logoURI || isLogoOverridden
-                ? vault.address
-                : vault.tokenAddress ?? tokenAddress,
-            logoURI: vault.logoURI ?? vaultInfo?.logoURI ?? vault.tokenLogoURI,
+            // ...shareData,
+            // ...vault,
+            // address:
+            //   !!vault.logoURI || !!vaultInfo?.logoURI || isLogoOverridden
+            //     ? vault.address
+            //     : vault.tokenAddress ?? tokenAddress,
+            logoURI: vault.tokenLogoURI,
           }}
           className={iconClassName}
         />
@@ -92,7 +92,7 @@ export const VaultBadge = (props: VaultBadgeProps) => {
               nameClassName
             )}
           >
-            {vaultInfo?.name ?? vault.name ?? shareData?.name}
+            {vault.name}
           </span>
           {showSymbol && (
             <span
@@ -101,9 +101,7 @@ export const VaultBadge = (props: VaultBadgeProps) => {
                 symbolClassName
               )}
             >
-              {vaultInfo?.symbol ??
-                vault.shareData?.symbol ??
-                shareData?.symbol}
+              {vault.shareData.symbol}
             </span>
           )}
         </div>

@@ -37,11 +37,11 @@ import {
 
 interface ReviewViewProps {
   vault: Vault;
-  prizePool: PrizePool;
+  // prizePool: PrizePool;
 }
 
 export const ReviewView = (props: ReviewViewProps) => {
-  const { vault, prizePool } = props;
+  const { vault } = props;
 
   const t_common = useTranslations("Common");
   const t_txModals = useTranslations("TxModals");
@@ -91,7 +91,7 @@ export const ReviewView = (props: ReviewViewProps) => {
       />
       <BasicDepositForm vault={vault} />
       <div className="flex flex-col gap-4 mx-auto md:flex-row md:gap-9">
-        <Odds vault={vault} prizePool={prizePool} />
+        {/* <Odds vault={vault} prizePool={prizePool} /> */}
         <NetworkFees vault={vault} show={feesToShow} />
       </div>
     </div>

@@ -36,6 +36,7 @@ import { MainView } from "./Views/MainView";
 import { ReviewView } from "./Views/ReviewView";
 import { SuccessView } from "./Views/SuccessView";
 import { WaitingView } from "./Views/WaitingView";
+import { currentVault } from "@hooks/addresses";
 
 export type DepositModalView =
   | "main"
@@ -79,7 +80,8 @@ export const DepositModal = (props: DepositModalProps) => {
 
   const addRecentTransaction = useAddRecentTransaction();
 
-  const { vault } = useSelectedVault();
+  // const { vault } = useSelectedVault();
+  const vault: any = currentVault;
 
   const { isModalOpen, setIsModalOpen } = useIsModalOpen(MODAL_KEYS.deposit, {
     onClose,
@@ -92,17 +94,18 @@ export const DepositModal = (props: DepositModalProps) => {
   const [formTokenAddress, setFormTokenAddress] = useAtom(
     depositFormTokenAddressAtom
   );
+
   const setFormTokenAmount = useSetAtom(depositFormTokenAmountAtom);
   const setFormShareAmount = useSetAtom(depositFormShareAmountAtom);
 
-  const { data: vaultToken } = useVaultTokenData(vault!);
+  // const { data: vaultToken } = useVaultTokenData(vault!);
 
-  const { data: tokenPermitSupport } = useTokenPermitSupport(
-    vault?.chainId!,
-    formTokenAddress ?? vaultToken?.address!
-  );
+  // const { data: tokenPermitSupport } = useTokenPermitSupport(
+  //   vault?.chainId!,
+  //   formTokenAddress ?? vaultToken?.address!
+  // );
 
-  const { data: vaultExchangeRate } = useVaultExchangeRate(vault!);
+  // const { data: vaultExchangeRate } = useVaultExchangeRate(vault!);
 
   const { isActive: isPermitDepositsDisabled } = useMiscSettings(
     "permitDepositsDisabled"
@@ -110,28 +113,28 @@ export const DepositModal = (props: DepositModalProps) => {
 
   const prizePools = useSupportedPrizePools();
 
-  const prizePool = useMemo(() => {
-    if (!!vault) {
-      return Object.values(prizePools).find(
-        (prizePool) => prizePool.chainId === vault.chainId
-      );
-    }
-  }, [prizePools, vault]);
+  // const prizePool = useMemo(() => {
+  //   if (!!vault) {
+  //     return Object.values(prizePools).find(
+  //       (prizePool) => prizePool.chainId === vault.chainId
+  //     );
+  //   }
+  // }, [prizePools, vault]);
 
-  const createToast = () => {
-    if (!!vault && !!depositTxHash && view === "confirming") {
-      createDepositTxToast({
-        vault: vault,
-        txHash: depositTxHash,
-        addRecentTransaction,
-        refetchUserBalances,
-        intl: t_toasts,
-      });
-    }
-  };
+  // const createToast = () => {
+  //   if (!!vault && !!depositTxHash && view === "confirming") {
+  //     createDepositTxToast({
+  //       vault: vault,
+  //       txHash: depositTxHash,
+  //       addRecentTransaction,
+  //       refetchUserBalances,
+  //       intl: t_toasts,
+  //     });
+  //   }
+  // };
 
   const handleClose = () => {
-    createToast();
+    // createToast();
     setIsModalOpen(false);
     setView("main");
     setFormTokenAddress(undefined);
@@ -141,8 +144,8 @@ export const DepositModal = (props: DepositModalProps) => {
 
   if (isModalOpen && !!vault) {
     const modalViews: Record<DepositModalView, ReactNode> = {
-      main: <MainView vault={vault} prizePool={prizePool!} />,
-      review: <ReviewView vault={vault} prizePool={prizePool!} />,
+      main: <MainView vault={vault} />,
+      review: <ReviewView vault={vault} />,
       waiting: <WaitingView vault={vault} closeModal={handleClose} />,
       confirming: (
         <ConfirmingView
@@ -155,18 +158,27 @@ export const DepositModal = (props: DepositModalProps) => {
       error: <ErrorView setModalView={setView} />,
     };
 
-    const isZapping =
-      !!vaultToken &&
-      !!formTokenAddress &&
-      lower(vaultToken.address) !== lower(formTokenAddress);
+    const isZapping = false;
+    // !!vaultToken &&
+    // !!formTokenAddress &&
+    // lower(vaultToken.address) !== lower(formTokenAddress);
 
-    const modalFooterContent = !!vaultExchangeRate ? (
+    const modalFooterContent = true ? (
       <div
         className={classNames("flex flex-col items-center gap-6", {
           hidden: view !== "main" && view !== "review",
         })}
       >
-        {isZapping ? (
+        <DepositTxButton
+          vault={vault}
+          modalView={view}
+          setModalView={setView}
+          setDepositTxHash={setDepositTxHash}
+          refetchUserBalances={refetchUserBalances}
+          onSuccessfulApproval={onSuccessfulApproval}
+          onSuccessfulDeposit={onSuccessfulDeposit}
+        />
+        {/* {isZapping ? (
           <DepositZapTxButton
             vault={vault}
             modalView={view}
@@ -198,11 +210,12 @@ export const DepositModal = (props: DepositModalProps) => {
             onSuccessfulApproval={onSuccessfulApproval}
             onSuccessfulDeposit={onSuccessfulDeposit}
           />
-        )}
+        )} */}
         {/* {view === 'review' && <DepositDisclaimer vault={vault} />} */}
       </div>
     ) : undefined;
 
+    console.log("modal test opening  ", { view });
     return (
       <Modal
         bodyContent={modalViews[view]}

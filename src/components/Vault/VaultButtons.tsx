@@ -1,41 +1,51 @@
-import { Vault } from '@generationsoftware/hyperstructure-client-js'
-import { useUserVaultShareBalance } from '@generationsoftware/hyperstructure-react-hooks'
-import { GiftIcon } from '@heroicons/react/24/solid'
-import { DelegateButton, DepositButton, WithdrawButton } from '@shared/react-components'
-import classNames from 'classnames'
-import * as fathom from 'fathom-client'
-import { useTranslations } from 'next-intl'
-import { Address } from 'viem'
-import { useAccount } from 'wagmi'
-import { FATHOM_EVENTS } from '@constants/config'
+import { Vault } from "@generationsoftware/hyperstructure-client-js";
+import { useUserVaultShareBalance } from "@generationsoftware/hyperstructure-react-hooks";
+import { GiftIcon } from "@heroicons/react/24/solid";
+import {
+  DelegateButton,
+  DepositButton,
+  WithdrawButton,
+} from "@shared/react-components";
+import classNames from "classnames";
+import * as fathom from "fathom-client";
+import { useTranslations } from "next-intl";
+import { Address } from "viem";
+import { useAccount } from "wagmi";
+import { FATHOM_EVENTS } from "@constants/config";
 
 interface VaultButtonsProps {
-  vault: Vault
-  forceShow?: ('delegate' | 'withdraw')[]
-  forceHide?: ('delegate' | 'withdraw')[]
-  fullSized?: boolean
-  className?: string
+  vault: Vault;
+  forceShow?: ("delegate" | "withdraw")[];
+  forceHide?: ("delegate" | "withdraw")[];
+  fullSized?: boolean;
+  className?: string;
+  shareBalance?: any;
 }
 
 export const VaultButtons = (props: VaultButtonsProps) => {
-  const { vault, forceShow, forceHide, fullSized, className } = props
+  const { vault, forceShow, forceHide, fullSized, className, shareBalance } =
+    props;
 
-  const t_common = useTranslations('Common')
-  const t_tooltips = useTranslations('Tooltips')
+  const t_common = useTranslations("Common");
+  const t_tooltips = useTranslations("Tooltips");
 
-  const { address: userAddress } = useAccount()
+  const { address: userAddress } = useAccount();
 
-  const { data: vaultBalance } = useUserVaultShareBalance(vault, userAddress as Address)
-  const shareBalance = vaultBalance?.amount ?? 0n
+  const { data: vaultBalance } = useUserVaultShareBalance(
+    vault,
+    userAddress as Address
+  );
+  // const shareBalance = vaultBalance?.amount ?? 0n
 
-  const isDelegateButtonShown =
-    (shareBalance > 0n || forceShow?.includes('delegate')) && !forceHide?.includes('delegate')
+  // const isDelegateButtonShown =
+  //   (shareBalance > 0n || forceShow?.includes('delegate')) && !forceHide?.includes('delegate')
   const isWithdrawButtonShown =
-    (shareBalance > 0n || forceShow?.includes('withdraw')) && !forceHide?.includes('withdraw')
+    (shareBalance > 0n || forceShow?.includes("withdraw")) &&
+    !forceHide?.includes("withdraw");
 
   return (
-    <div className={classNames('flex items-center gap-2', className)}>
-      {isDelegateButtonShown && (
+    <div className={classNames("flex items-center gap-2", className)}>
+      {/* {isDelegateButtonShown && (
         <DelegateButton
           vault={vault}
           extraOnClick={() => fathom.trackEvent(FATHOM_EVENTS.openedDelegateModal)}
@@ -44,15 +54,17 @@ export const VaultButtons = (props: VaultButtonsProps) => {
         >
           <GiftIcon className='w-4 h-4 my-0.5' />
         </DelegateButton>
-      )}
+      )} */}
       {isWithdrawButtonShown && (
         <WithdrawButton
           vault={vault}
-          extraOnClick={() => fathom.trackEvent(FATHOM_EVENTS.openedWithdrawModal)}
+          extraOnClick={() =>
+            fathom.trackEvent(FATHOM_EVENTS.openedWithdrawModal)
+          }
           fullSized={fullSized}
-          color='transparent'
+          color="transparent"
         >
-          {t_common('withdraw')}
+          {t_common("withdraw")}
         </WithdrawButton>
       )}
       <DepositButton
@@ -62,5 +74,5 @@ export const VaultButtons = (props: VaultButtonsProps) => {
         intl={{ base: t_common, tooltips: t_tooltips }}
       />
     </div>
-  )
-}
+  );
+};

@@ -40,6 +40,8 @@ import { useAccount } from "wagmi";
 import { ZAP_PRIORITIES } from "@constants/config";
 import { useZapTokenOptions } from "@hooks/useZapTokenOptions";
 import { isValidFormInput, TxFormInput, TxFormValues } from "../TxFormInput";
+import { useVaultDataReader } from "@hooks/useVaultDataReader";
+import { currentVault } from "@hooks/addresses";
 
 export const depositFormTokenAddressAtom = atom<Address | undefined>(undefined);
 export const depositFormTokenAmountAtom = atom<string>("");
@@ -63,16 +65,18 @@ export const DepositForm = (props: DepositFormProps) => {
   const { address: userAddress } = useAccount();
 
   //: todo fix exchange rate
-  const { data: vaultExchangeRate } = useVaultExchangeRate(vault);
+  // const { data: vaultExchangeRate } = useVaultExchangeRate(vault);
   // const vaultExchangeRate = 1000000n
-
-  const { data: vaultToken } = useVaultTokenPrice(vault);
+  const vaultToken: any = currentVault.tokenData;
+  // const { data: vaultToken } = useVaultTokenPrice(vault);
   const { data: vaultTokenWithAmount } = useTokenBalance(
     vault.chainId,
     userAddress!,
-    vaultToken?.address!,
+    vaultToken?.address,
     { refetchOnWindowFocus: true }
   );
+
+  console.log("balance test ", { vaultTokenWithAmount, vault });
 
   const { data: share } = useVaultSharePrice(vault);
 
@@ -80,67 +84,69 @@ export const DepositForm = (props: DepositFormProps) => {
     depositFormTokenAddressAtom
   );
 
-  const tokenAddress = formTokenAddress ?? vaultToken?.address;
+  const tokenAddress: any = currentVault.tokenData.address; //formTokenAddress ?? vaultToken?.address;
 
-  const { vaults } = useSelectedVaults();
+  // const { vaults } = useSelectedVaults();
+  const inputVault: any = currentVault;
 
-  const inputVault = useMemo(() => {
-    if (!!vault && !!tokenAddress) {
-      const vaultId = getVaultId({
-        chainId: vault.chainId,
-        address: tokenAddress,
-      });
-      return Object.values(vaults.vaults).find(
-        (v) => getVaultId(v) === vaultId
-      );
-    }
-  }, [vault, tokenAddress, vaults]);
+  // const inputVault = useMemo(() => {
+  //   if (!!vault && !!tokenAddress) {
+  //     const vaultId = getVaultId({
+  //       chainId: vault.chainId,
+  //       address: tokenAddress,
+  //     });
+  //     return Object.values(vaults.vaults).find(
+  //       (v) => getVaultId(v) === vaultId
+  //     );
+  //   }
+  // }, [vault, tokenAddress, vaults]);
 
-  const shareLogoURI = useMemo(() => {
-    if (!!vault) {
-      return (
-        vault.logoURI ??
-        vaults.allVaultInfo.find((v) => getVaultId(v) === vault.id)?.logoURI
-      );
-    }
-  }, [vault, vaults]);
+  const shareLogoURI = "";
+  // const shareLogoURI = useMemo(() => {
+  //   if (!!vault) {
+  //     return (
+  //       vault.logoURI ??
+  //       vaults.allVaultInfo.find((v) => getVaultId(v) === vault.id)?.logoURI
+  //     );
+  //   }
+  // }, [vault, vaults]);
 
   const { data: tokenData } = useToken(vault.chainId, tokenAddress!);
-  const { data: tokenPrices } = useTokenPrices(
-    vault.chainId,
-    !!tokenAddress ? [tokenAddress] : []
-  );
-  const { data: inputVaultWithPrice } = useVaultSharePrice(inputVault!);
-  const { data: beefyVault } = useBeefyVault(vault);
-  const { data: underlyingBeefyTokenPrices } = useTokenPrices(
-    vault.chainId,
-    !!beefyVault ? [beefyVault.want] : []
-  );
-  const token:
-    | (TokenWithSupply & TokenWithPrice & Partial<TokenWithLogo>)
-    | undefined =
-    !!tokenAddress && (!!tokenData || !!inputVaultWithPrice)
-      ? {
-          logoURI:
-            !!vaultToken && lower(tokenAddress) === lower(vaultToken.address)
-              ? vault.tokenLogoURI
-              : inputVault?.logoURI,
-          ...tokenData!,
-          ...inputVaultWithPrice!,
-          ...(!!beefyVault && lower(tokenAddress) === lower(beefyVault.address)
-            ? beefyVault
-            : {}),
-          price:
-            tokenPrices?.[lower(tokenAddress)] ??
-            inputVaultWithPrice?.price ??
-            (!!beefyVault &&
-            !!underlyingBeefyTokenPrices &&
-            lower(tokenAddress) === lower(beefyVault.address)
-              ? (underlyingBeefyTokenPrices?.[lower(beefyVault.want)] ?? 0) *
-                parseFloat(formatUnits(beefyVault.pricePerFullShare, 18))
-              : undefined),
-        }
-      : undefined;
+  // const { data: tokenPrices } = useTokenPrices(
+  //   vault.chainId,
+  //   !!tokenAddress ? [tokenAddress] : []
+  // );
+  // const { data: inputVaultWithPrice } = useVaultSharePrice(inputVault!);
+  // const { data: beefyVault } = useBeefyVault(vault);
+  // const { data: underlyingBeefyTokenPrices } = useTokenPrices(
+  //   vault.chainId,
+  //   !!beefyVault ? [beefyVault.want] : []
+  // );
+  const token = currentVault.tokenData;
+  // | (TokenWithSupply & TokenWithPrice & Partial<TokenWithLogo>)
+  // | undefined =
+  // !!tokenAddress && (!!tokenData || !!inputVaultWithPrice)
+  //   ? {
+  //       logoURI:
+  //         !!vaultToken && lower(tokenAddress) === lower(vaultToken.address)
+  //           ? vault.tokenLogoURI
+  //           : inputVault?.logoURI,
+  //       ...tokenData!,
+  //       ...inputVaultWithPrice!,
+  //       ...(!!beefyVault && lower(tokenAddress) === lower(beefyVault.address)
+  //         ? beefyVault
+  //         : {}),
+  //       price:
+  //         tokenPrices?.[lower(tokenAddress)] ??
+  //         inputVaultWithPrice?.price ??
+  //         (!!beefyVault &&
+  //         !!underlyingBeefyTokenPrices &&
+  //         lower(tokenAddress) === lower(beefyVault.address)
+  //           ? (underlyingBeefyTokenPrices?.[lower(beefyVault.want)] ?? 0) *
+  //             parseFloat(formatUnits(beefyVault.pricePerFullShare, 18))
+  //           : undefined),
+  //     }
+  //   : undefined;
 
   // console.log('price test ', {
   //   tokenPrices,
@@ -194,24 +200,24 @@ export const DepositForm = (props: DepositFormProps) => {
       : 0n;
   }, [formTokenAmount, token]);
 
-  const { amountOut: zapAmountOut, isFetchingZapArgs } =
-    useSendDepositZapTransaction(
-      {
-        address: token?.address!,
-        decimals: token?.decimals!,
-        amount: depositAmount,
-      },
-      vault
-    );
+  // const { amountOut: zapAmountOut, isFetchingZapArgs } =
+  //   useSendDepositZapTransaction(
+  //     {
+  //       address: token?.address!,
+  //       decimals: token?.decimals!,
+  //       amount: depositAmount,
+  //     },
+  //     vault
+  //   );
 
-  const isZapping =
-    !!vaultToken &&
-    !!formTokenAddress &&
-    lower(vaultToken.address) !== lower(formTokenAddress);
-  const isZappingAndSwapping =
-    isZapping &&
-    !!cachedZapAmountOut &&
-    cachedZapAmountOut.expected !== cachedZapAmountOut.min;
+  // const isZapping =
+  //   !!vaultToken &&
+  //   !!formTokenAddress &&
+  //   lower(vaultToken.address) !== lower(formTokenAddress);
+  // const isZappingAndSwapping =
+  //   isZapping &&
+  //   !!cachedZapAmountOut &&
+  //   cachedZapAmountOut.expected !== cachedZapAmountOut.min;
 
   const vaultDecimals =
     vault.decimals ??
@@ -220,20 +226,20 @@ export const DepositForm = (props: DepositFormProps) => {
     share?.decimals ??
     shareWithAmount?.decimals;
 
-  useEffect(() => {
-    if (
-      isZapping &&
-      !!zapAmountOut?.expected &&
-      !!zapAmountOut.min &&
-      (cachedZapAmountOut?.expected !== zapAmountOut.expected ||
-        cachedZapAmountOut?.min !== zapAmountOut.min)
-    ) {
-      setCachedZapAmountOut(zapAmountOut);
-    }
-  }, [isZapping, zapAmountOut]);
+  // useEffect(() => {
+  //   if (
+  //     isZapping &&
+  //     !!zapAmountOut?.expected &&
+  //     !!zapAmountOut.min &&
+  //     (cachedZapAmountOut?.expected !== zapAmountOut.expected ||
+  //       cachedZapAmountOut?.min !== zapAmountOut.min)
+  //   ) {
+  //     setCachedZapAmountOut(zapAmountOut);
+  //   }
+  // }, [isZapping, zapAmountOut]);
 
   useEffect(() => {
-    if (isZapping && !!cachedZapAmountOut && vaultDecimals !== undefined) {
+    if (!!cachedZapAmountOut && vaultDecimals !== undefined) {
       const formattedShares = formatUnits(
         cachedZapAmountOut.expected,
         vaultDecimals
@@ -251,32 +257,31 @@ export const DepositForm = (props: DepositFormProps) => {
   }, [cachedZapAmountOut]);
 
   const handleTokenAmountChange = (tokenAmount: string) => {
-    if (
-      !!vaultExchangeRate &&
-      token?.decimals !== undefined &&
-      share?.decimals !== undefined
-    ) {
+    console.log("deposit test setting from token 1 ", tokenAmount);
+    setFormTokenAmount(tokenAmount);
+    if (token?.decimals !== undefined && share?.decimals !== undefined) {
       if (isValidFormInput(tokenAmount, token.decimals)) {
+        console.log("deposit test setting from token ", tokenAmount);
         setFormTokenAmount(tokenAmount);
 
-        if (!isZapping) {
-          const tokens = parseUnits(tokenAmount, token.decimals);
-          const shares = getSharesFromAssets(
-            tokens,
-            vaultExchangeRate,
-            share.decimals
-          );
-          const formattedShares = formatUnits(shares, share.decimals);
-          const slicedShares = formattedShares.endsWith(".0")
-            ? formattedShares.slice(0, -2)
-            : formattedShares;
+        // if (!isZapping) {
+        //   const tokens = parseUnits(tokenAmount, token.decimals);
+        //   const shares = getSharesFromAssets(
+        //     tokens,
+        //     vaultExchangeRate,
+        //     share.decimals
+        //   );
+        //   const formattedShares = formatUnits(shares, share.decimals);
+        //   const slicedShares = formattedShares.endsWith(".0")
+        //     ? formattedShares.slice(0, -2)
+        //     : formattedShares;
 
-          setFormShareAmount(slicedShares);
+        //   setFormShareAmount(slicedShares);
 
-          formMethods.setValue("shareAmount", slicedShares, {
-            shouldValidate: true,
-          });
-        }
+        //   formMethods.setValue("shareAmount", slicedShares, {
+        //     shouldValidate: true,
+        //   });
+        // }
       } else {
         setFormTokenAmount("0");
       }
@@ -290,39 +295,39 @@ export const DepositForm = (props: DepositFormProps) => {
     }
   }, [tokenData]);
 
-  const handleShareAmountChange = (shareAmount: string) => {
-    if (
-      !isZapping &&
-      !!vaultExchangeRate &&
-      token?.decimals !== undefined &&
-      share?.decimals !== undefined
-    ) {
-      if (isValidFormInput(shareAmount, share.decimals)) {
-        setFormShareAmount(shareAmount);
+  // const handleShareAmountChange = (shareAmount: string) => {
+  //   if (
+  //     !isZapping &&
+  //     !!vaultExchangeRate &&
+  //     token?.decimals !== undefined &&
+  //     share?.decimals !== undefined
+  //   ) {
+  //     if (isValidFormInput(shareAmount, share.decimals)) {
+  //       setFormShareAmount(shareAmount);
 
-        const shares = parseUnits(shareAmount, share.decimals);
-        const tokens = getAssetsFromShares(
-          shares,
-          vaultExchangeRate,
-          share.decimals
-        );
-        const formattedTokens = formatUnits(tokens, token.decimals);
-        const slicedTokens = formattedTokens.endsWith(".0")
-          ? formattedTokens.slice(0, -2)
-          : formattedTokens;
+  //       const shares = parseUnits(shareAmount, share.decimals);
+  //       const tokens = getAssetsFromShares(
+  //         shares,
+  //         vaultExchangeRate,
+  //         share.decimals
+  //       );
+  //       const formattedTokens = formatUnits(tokens, token.decimals);
+  //       const slicedTokens = formattedTokens.endsWith(".0")
+  //         ? formattedTokens.slice(0, -2)
+  //         : formattedTokens;
 
-        setFormTokenAmount(slicedTokens);
+  //       setFormTokenAmount(slicedTokens);
 
-        formMethods.setValue("tokenAmount", slicedTokens, {
-          shouldValidate: true,
-        });
-      } else {
-        setFormTokenAmount("0");
-      }
-    }
-  };
+  //       formMethods.setValue("tokenAmount", slicedTokens, {
+  //         shouldValidate: true,
+  //       });
+  //     } else {
+  //       setFormTokenAmount("0");
+  //     }
+  //   }
+  // };
 
-  const tokenInputData = useMemo(() => {
+  const tokenInputData: any = useMemo(() => {
     if (!!token) {
       return {
         ...token,
@@ -396,34 +401,35 @@ export const DepositForm = (props: DepositFormProps) => {
   }, [zapTokenOptions, vaultToken, vaultTokenWithAmount]);
 
   console.log("state test share ", shareInputData);
+  console.log("deposit form loading");
 
-  useEffect(() => {
-    if (
-      isZappingAndSwapping &&
-      !!zapAmountOut &&
-      tokenInputData?.decimals !== undefined &&
-      shareInputData?.decimals !== undefined
-    ) {
-      const inputValue =
-        parseFloat(formatUnits(depositAmount, tokenInputData.decimals)) *
-        tokenInputData.price;
-      const outputValue =
-        parseFloat(
-          formatUnits(zapAmountOut.expected, shareInputData.decimals)
-        ) * shareInputData.price;
+  // useEffect(() => {
+  //   if (
+  //     isZappingAndSwapping &&
+  //     !!zapAmountOut &&
+  //     tokenInputData?.decimals !== undefined &&
+  //     shareInputData?.decimals !== undefined
+  //   ) {
+  //     const inputValue =
+  //       parseFloat(formatUnits(depositAmount, tokenInputData.decimals)) *
+  //       tokenInputData.price;
+  //     const outputValue =
+  //       parseFloat(
+  //         formatUnits(zapAmountOut.expected, shareInputData.decimals)
+  //       ) * shareInputData.price;
 
-      if (!!inputValue && !!outputValue) {
-        setPriceImpact((1 - inputValue / outputValue) * 100);
-      } else {
-        setPriceImpact(undefined);
-      }
+  //     if (!!inputValue && !!outputValue) {
+  //       setPriceImpact((1 - inputValue / outputValue) * 100);
+  //     } else {
+  //       setPriceImpact(undefined);
+  //     }
 
-      setMinReceived(zapAmountOut.min);
-    } else {
-      setPriceImpact(undefined);
-      setMinReceived(undefined);
-    }
-  }, [depositAmount, zapAmountOut, tokenInputData, shareInputData]);
+  //     setMinReceived(zapAmountOut.min);
+  //   } else {
+  //     setPriceImpact(undefined);
+  //     setMinReceived(undefined);
+  //   }
+  // }, [depositAmount, zapAmountOut, tokenInputData, shareInputData]);
 
   // console.log('form test ', { tokenInputData, shareInputData })
 
@@ -474,9 +480,9 @@ export const DepositForm = (props: DepositFormProps) => {
             "!backdrop-brightness-100": isZapping,
           })}
         /> */}
-        {isZappingAndSwapping && !!depositAmount && (
-          <div className="flex flex-col p-2 text-xs text-pt-purple-100">
-            {/* <div className="flex gap-2 items-center">
+        {/* {isZappingAndSwapping && !!depositAmount && ( */}
+        {/* <div className="flex flex-col p-2 text-xs text-pt-purple-100"> */}
+        {/* <div className="flex gap-2 items-center">
               <span className="font-semibold">{t_txModals("priceImpact")}</span>
               <span className="h-3 grow border-b border-dashed border-pt-purple-50/30" />
               {priceImpact !== undefined ? (
@@ -490,7 +496,7 @@ export const DepositForm = (props: DepositFormProps) => {
                 <Spinner />
               )}
             </div> */}
-            {/* <div className="flex gap-2 items-center">
+        {/* <div className="flex gap-2 items-center">
               <span className="font-semibold">
                 {t_txModals("minimumReceived")}
               </span>
@@ -510,8 +516,8 @@ export const DepositForm = (props: DepositFormProps) => {
                 <Spinner />
               )}
             </div> */}
-          </div>
-        )}
+        {/* </div> */}
+        {/* )} */}
       </FormProvider>
     </div>
   );

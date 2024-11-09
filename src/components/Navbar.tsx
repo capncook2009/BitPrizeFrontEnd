@@ -1,8 +1,5 @@
-import { Bars3Icon } from "@heroicons/react/24/outline";
-// import { usePrivy } from "@privy-io/react-auth";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { MODAL_KEYS, useIsModalOpen } from "@shared/generic-react-hooks";
-import { Logo } from "@shared/ui";
 import classNames from "classnames";
 import { Navbar as FlowbiteNavbar } from "flowbite-react";
 import { useTranslations } from "next-intl";
