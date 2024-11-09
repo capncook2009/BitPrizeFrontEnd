@@ -6,6 +6,7 @@ import { getMessages } from "src/utils";
 import { Layout } from "@components/Layout";
 import ConfettiExplosion from "react-confetti-explosion";
 import { useState } from "react";
+import { useAccount } from "wagmi";
 
 interface ReferralPageProps {
   messages: IntlMessages;
@@ -26,8 +27,9 @@ export default function ReferralPage() {
   const t = useTranslations("Common");
   const [isExploding, setIsExploding] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
+  const { address } = useAccount();
 
-  const referralCode = "";
+  const referralCode = "2389HDFHRH";
   const claimedReferrals = [
     {
       date: "16 AUG 2023",

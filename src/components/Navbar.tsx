@@ -1,5 +1,6 @@
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { MODAL_KEYS, useIsModalOpen } from "@shared/generic-react-hooks";
+import { Logo } from "@shared/ui";
 import classNames from "classnames";
 import { Navbar as FlowbiteNavbar } from "flowbite-react";
 import { useTranslations } from "next-intl";
@@ -56,13 +57,18 @@ export const Navbar = () => {
       >
         {/* Left Side Branding */}
         <Link href="/" className="cursor-pointer z-30">
-          {/* <Logo smLogoClassName='w-8' mdLogoClassName='w-[150px]' /> */}
           {/* BitPrize */}
           <h2
-            className="text-3xl font-medium md:text-5xl "
+            className="text-3xl flex text-center font-medium md:text-5xl "
             style={{ color: "#c2410c" }}
           >
-            BitPrize
+            <div className="flex  items-center ">
+              <img
+                src="/logo-bitprize.jpg"
+                style={{ width: 25, height: 25, marginRight: 8 }}
+              ></img>
+              BitPrize
+            </div>
           </h2>
         </Link>
 
