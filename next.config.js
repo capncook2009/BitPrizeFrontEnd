@@ -31,6 +31,9 @@ module.exports = {
     ],
     defaultLocale: "en",
   },
+  images: {
+    domains: ["https://api.multiavatar.com"],
+  },
   async headers() {
     return [
       {

@@ -31,8 +31,8 @@ const dummyGames: any[] = [
   {
     id: "2",
     name: "Puzzle Quest",
-    lastScore: 3200,
-    highScore: 5500,
+    lastScore: 0,
+    highScore: 0,
     live: false,
     gameLink: "/games/2048/index.html",
     description: "Mind-bending puzzles and challenges",
@@ -44,8 +44,8 @@ const dummyGames: any[] = [
   {
     id: "3",
     name: "Racing Legends",
-    lastScore: 8900,
-    highScore: 12300,
+    lastScore: 0,
+    highScore: 0,
     live: false,
     gameLink: "/games/2048/index.html",
     description: "High-speed racing action",
@@ -57,8 +57,8 @@ const dummyGames: any[] = [
   {
     id: "6",
     name: "Math Challenge",
-    lastScore: 1500,
-    highScore: 1800,
+    lastScore: 0,
+    highScore: 0,
     live: false,
     gameLink: "/games/2048/index.html",
     description: "Test your math skills",

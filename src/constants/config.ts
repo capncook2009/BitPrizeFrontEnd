@@ -420,3 +420,5 @@ export const FATHOM_EVENTS = {
  * Wallet stats API
  */
 export const WALLET_STATS_API_URL = "https://wallet-stats.api.cabana.fi";
+
+export const BACKEND_API_URL = "https://taskdao-backend-rho.vercel.app";

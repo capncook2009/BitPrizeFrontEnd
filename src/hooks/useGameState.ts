@@ -1,4 +1,7 @@
+import { BACKEND_API_URL } from "@constants/config";
+import axios from "axios";
 import { useState, useEffect } from "react";
+import { useAccount } from "wagmi";
 
 // Define types for your game state
 interface GameState {
@@ -40,6 +43,7 @@ export const useGameState = ({
   const [error, setError] = useState<Error | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [syncTimeout, setSyncTimeout] = useState<NodeJS.Timeout | null>(null);
+  const { address } = useAccount();
 
   // Initialize game state from localStorage or default values
   useEffect(() => {
@@ -76,17 +80,21 @@ export const useGameState = ({
   const syncWithBackend = async (state: GameState) => {
     try {
       console.log("game state test : syncing state with backend", state);
-      //   const response = await fetch(apiEndpoint, {
-      //     method: "POST",
-      //     headers: {
-      //       "Content-Type": "application/json",
-      //     },
-      //     body: JSON.stringify(state),
-      //   });
 
-      //   if (!response.ok) {
-      //     throw new Error(`Failed to sync with backend: ${response.statusText}`);
-      //   }
+      const body: any = {
+        walletAddress: address?.toLocaleLowerCase(),
+        score: state.score,
+      };
+
+      const response = await axios.post(
+        `${BACKEND_API_URL}/api/bitprize/updateGameScore`,
+        body
+      );
+
+      if (response.data?.error) {
+        throw new Error(`Failed to sync with backend: ${response.statusText}`);
+      }
+      console.log("backend sync success");
 
       //   const updatedState = await response.json();
       //   return updatedState;
