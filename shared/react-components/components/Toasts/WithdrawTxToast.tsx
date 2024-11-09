@@ -1,4 +1,4 @@
-import { Vault } from '@generationsoftware/hyperstructure-client-js'
+import { Vault } from "@generationsoftware/hyperstructure-client-js";
 import {
   useSelectedVault,
   useTokenBalance,
@@ -6,38 +6,42 @@ import {
   useUserVaultTokenBalance,
   useVaultBalance,
   useVaultShareData,
-  useVaultTokenData
-} from '@generationsoftware/hyperstructure-react-hooks'
-import { XMarkIcon } from '@heroicons/react/24/outline'
-import { MODAL_KEYS, useIsModalOpen } from '@shared/generic-react-hooks'
-import { Intl } from '@shared/types'
-import { Spinner, toast } from '@shared/ui'
+  useVaultTokenData,
+} from "@generationsoftware/hyperstructure-react-hooks";
+import { XMarkIcon } from "@heroicons/react/24/outline";
+import { MODAL_KEYS, useIsModalOpen } from "@shared/generic-react-hooks";
+import { Intl } from "@shared/types";
+import { Spinner, toast } from "@shared/ui";
 import {
   getBlockExplorerName,
   getBlockExplorerUrl,
-  getNiceNetworkNameByChainId
-} from '@shared/utilities'
-import { ReactNode, useEffect } from 'react'
-import { Address } from 'viem'
-import { useAccount, useWaitForTransactionReceipt } from 'wagmi'
-import { ErrorPooly } from '../Graphics/ErrorPooly'
-import { SuccessPooly } from '../Graphics/SuccessPooly'
+  getNiceNetworkNameByChainId,
+} from "@shared/utilities";
+import { ReactNode, useEffect } from "react";
+import { Address } from "viem";
+import { useAccount, useWaitForTransactionReceipt } from "wagmi";
+import { ErrorPooly } from "../Graphics/ErrorPooly";
+import { SuccessPooly } from "../Graphics/SuccessPooly";
 
 export interface WithdrawTxToastProps {
-  vault: Vault
-  txHash: string
-  addRecentTransaction?: (tx: { hash: string; description: string; confirmations?: number }) => void
-  refetchUserBalances?: () => void
+  vault: Vault;
+  txHash: string;
+  addRecentTransaction?: (tx: {
+    hash: string;
+    description: string;
+    confirmations?: number;
+  }) => void;
+  refetchUserBalances?: () => void;
   intl?: Intl<
-    | 'withdrawal'
-    | 'withdrawingFrom'
-    | 'viewOn'
-    | 'success'
-    | 'withdrewFrom'
-    | 'uhOh'
-    | 'failedTx'
-    | 'tryAgain'
-  >
+    | "withdrawal"
+    | "withdrawingFrom"
+    | "viewOn"
+    | "success"
+    | "withdrewFrom"
+    | "uhOh"
+    | "failedTx"
+    | "tryAgain"
+  >;
 }
 
 /**
@@ -46,52 +50,61 @@ export interface WithdrawTxToastProps {
  * This toast will then update itself on TX success or fail
  */
 export const createWithdrawTxToast = (data: WithdrawTxToastProps) => {
-  toast(<WithdrawTxToast {...data} />, { id: data.txHash })
-}
+  toast(<WithdrawTxToast {...data} />, { id: data.txHash });
+};
 
 export const WithdrawTxToast = (props: WithdrawTxToastProps) => {
-  const { vault, txHash, addRecentTransaction, refetchUserBalances, intl } = props
+  const { vault, txHash, addRecentTransaction, refetchUserBalances, intl } =
+    props;
 
-  const { data: tokenData } = useVaultTokenData(vault)
+  const { data: tokenData } = useVaultTokenData(vault);
 
   const { isFetching, isSuccess, isError } = useWaitForTransactionReceipt({
     chainId: vault.chainId,
-    hash: txHash as Address
-  })
+    hash: txHash as Address,
+  });
 
-  const { address: userAddress } = useAccount()
+  const { address: userAddress } = useAccount();
 
   const { refetch: refetchTokenBalance } = useTokenBalance(
     vault.chainId,
     userAddress!,
     tokenData?.address!
-  )
+  );
 
-  const { refetch: refetchVaultBalance } = useVaultBalance(vault)
+  const { refetch: refetchVaultBalance } = useVaultBalance(vault);
 
-  const { refetch: refetchUserVaultShareBalance } = useUserVaultShareBalance(vault, userAddress!)
+  const { refetch: refetchUserVaultShareBalance } = useUserVaultShareBalance(
+    vault,
+    userAddress!
+  );
 
-  const { refetch: refetchUserVaultTokenBalance } = useUserVaultTokenBalance(vault, userAddress!)
+  const { refetch: refetchUserVaultTokenBalance } = useUserVaultTokenBalance(
+    vault,
+    userAddress!
+  );
 
   useEffect(() => {
     if (isSuccess && !!txHash) {
       if (!!addRecentTransaction) {
-        const networkName = getNiceNetworkNameByChainId(vault.chainId)
-        const txDescription = `${tokenData?.symbol} ${intl?.('withdrawal') ?? 'Withdrawal'}`
+        const networkName = getNiceNetworkNameByChainId(vault.chainId);
+        const txDescription = `${tokenData?.symbol} ${
+          intl?.("withdrawal") ?? "Withdrawal"
+        }`;
 
         addRecentTransaction({
           hash: txHash,
-          description: `${networkName}: ${txDescription}`
-        })
+          description: `${networkName}: ${txDescription}`,
+        });
       }
 
-      refetchTokenBalance()
-      refetchVaultBalance()
-      refetchUserVaultShareBalance()
-      refetchUserVaultTokenBalance()
-      refetchUserBalances?.()
+      refetchTokenBalance();
+      refetchVaultBalance();
+      refetchUserVaultShareBalance();
+      refetchUserVaultTokenBalance();
+      refetchUserBalances?.();
     }
-  }, [isSuccess, txHash])
+  }, [isSuccess, txHash]);
 
   if (!isFetching && isSuccess) {
     toast(
@@ -99,7 +112,7 @@ export const WithdrawTxToast = (props: WithdrawTxToastProps) => {
         <SuccessView vault={vault} txHash={txHash} intl={intl} />
       </ToastLayout>,
       { id: txHash }
-    )
+    );
   }
 
   if (!isFetching && !isSuccess && isError) {
@@ -108,144 +121,149 @@ export const WithdrawTxToast = (props: WithdrawTxToastProps) => {
         <ErrorView vault={vault} txHash={txHash} intl={intl} />
       </ToastLayout>,
       { id: txHash }
-    )
+    );
   }
 
   return (
     <ToastLayout id={txHash}>
       <ConfirmingView vault={vault} txHash={txHash} intl={intl} />
     </ToastLayout>
-  )
-}
+  );
+};
 
 interface ToastLayoutProps {
-  id: string | number
-  children: ReactNode
+  id: string | number;
+  children: ReactNode;
 }
 
 const ToastLayout = (props: ToastLayoutProps) => {
-  const { id, children } = props
+  const { id, children } = props;
 
   return (
-    <div className='relative w-full flex flex-col gap-2 items-center text-center smSonner:w-80'>
+    <div className="relative w-full flex flex-col gap-2 items-center text-center smSonner:w-80">
       {children}
       <XMarkIcon
-        className='absolute top-0 right-0 h-3 w-3 text-pt-purple-100 cursor-pointer'
+        className="absolute top-0 right-0 h-3 w-3 text-pt-purple-100 cursor-pointer"
         onClick={() => toast.dismiss(id)}
       />
     </div>
-  )
-}
+  );
+};
 
 interface ConfirmingViewProps {
-  vault: Vault
-  txHash: string
-  intl?: Intl<'withdrawingFrom' | 'viewOn'>
+  vault: Vault;
+  txHash: string;
+  intl?: Intl<"withdrawingFrom" | "viewOn">;
 }
 
 const ConfirmingView = (props: ConfirmingViewProps) => {
-  const { vault, txHash, intl } = props
+  const { vault, txHash, intl } = props;
 
-  const { data: share } = useVaultShareData(vault)
+  const { data: share } = useVaultShareData(vault);
 
-  const vaultSymbol = `${share?.symbol ?? '?'}`
-  const name = getBlockExplorerName(vault.chainId)
+  const vaultSymbol = `${share?.symbol ?? "?"}`;
+  const name = getBlockExplorerName(vault.chainId);
 
   return (
     <>
-      <span className='flex items-center gap-2 text-pt-purple-50'>
-        <Spinner className='after:border-y-pt-teal' />{' '}
-        {intl?.('withdrawingFrom', { vault: vaultSymbol }) ?? `Withdrawing from ${vaultSymbol}...`}
+      <span className="flex items-center gap-2 text-pt-purple-50">
+        <Spinner className="after:border-y-pt-teal" />{" "}
+        {intl?.("withdrawingFrom", { vault: vaultSymbol }) ??
+          `Withdrawing from ${vaultSymbol}...`}
       </span>
       <a
-        href={getBlockExplorerUrl(vault.chainId, txHash, 'tx')}
-        target='_blank'
-        className='text-xs text-pt-teal'
+        href={getBlockExplorerUrl(vault.chainId, txHash, "tx")}
+        target="_blank"
+        className="text-xs text-pt-teal"
       >
-        {intl?.('viewOn', { name }) ?? `View on ${name}`}
+        {intl?.("viewOn", { name }) ?? `View on ${name}`}
       </a>
     </>
-  )
-}
+  );
+};
 
 interface SuccessViewProps {
-  vault: Vault
-  txHash: string
-  intl?: Intl<'success' | 'withdrewFrom' | 'viewOn'>
+  vault: Vault;
+  txHash: string;
+  intl?: Intl<"success" | "withdrewFrom" | "viewOn">;
 }
 
 const SuccessView = (props: SuccessViewProps) => {
-  const { vault, txHash, intl } = props
+  const { vault, txHash, intl } = props;
 
-  const { data: share } = useVaultShareData(vault)
+  const { data: share } = useVaultShareData(vault);
 
-  const vaultSymbol = `${share?.symbol ?? '?'}`
-  const network = getNiceNetworkNameByChainId(vault.chainId)
-  const name = getBlockExplorerName(vault.chainId)
+  const vaultSymbol = `${share?.symbol ?? "?"}`;
+  const network = getNiceNetworkNameByChainId(vault.chainId);
+  const name = getBlockExplorerName(vault.chainId);
 
   return (
     <>
-      <SuccessPooly className='w-16 h-auto' />
-      <div className='flex flex-col items-center text-center'>
-        <span className='text-xl font-semibold text-pt-teal'>
-          {intl?.('success') ?? 'Success!'}
+      <SuccessPooly />
+      <div className="flex flex-col items-center text-center">
+        <span className="text-xl font-semibold text-pt-teal">
+          {intl?.("success") ?? "Success!"}
         </span>
-        <span className='text-pt-purple-50'>
-          {intl?.('withdrewFrom', { vault: vaultSymbol, network }) ??
+        <span className="text-pt-purple-50">
+          {intl?.("withdrewFrom", { vault: vaultSymbol, network }) ??
             `You withdrew from ${vaultSymbol} on ${network}`}
         </span>
       </div>
       <a
-        href={getBlockExplorerUrl(vault.chainId, txHash, 'tx')}
-        target='_blank'
-        className='text-xs text-pt-teal'
+        href={getBlockExplorerUrl(vault.chainId, txHash, "tx")}
+        target="_blank"
+        className="text-xs text-pt-teal"
       >
-        {intl?.('viewOn', { name }) ?? `View on ${name}`}
+        {intl?.("viewOn", { name }) ?? `View on ${name}`}
       </a>
     </>
-  )
-}
+  );
+};
 
 interface ErrorViewProps {
-  vault: Vault
-  txHash: string
-  intl?: Intl<'uhOh' | 'failedTx' | 'tryAgain' | 'viewOn'>
+  vault: Vault;
+  txHash: string;
+  intl?: Intl<"uhOh" | "failedTx" | "tryAgain" | "viewOn">;
 }
 
 const ErrorView = (props: ErrorViewProps) => {
-  const { vault, txHash, intl } = props
+  const { vault, txHash, intl } = props;
 
-  const { setSelectedVaultById } = useSelectedVault()
+  const { setSelectedVaultById } = useSelectedVault();
 
-  const { setIsModalOpen } = useIsModalOpen(MODAL_KEYS.withdraw)
+  const { setIsModalOpen } = useIsModalOpen(MODAL_KEYS.withdraw);
 
   const handleRetry = () => {
-    setSelectedVaultById(vault.id)
-    setIsModalOpen(true)
-  }
+    setSelectedVaultById(vault.id);
+    setIsModalOpen(true);
+  };
 
-  const name = getBlockExplorerName(vault.chainId)
+  const name = getBlockExplorerName(vault.chainId);
 
   return (
     <>
-      <ErrorPooly className='w-16 h-auto' />
-      <div className='flex flex-col items-center text-center'>
-        <span className='text-xl font-semibold text-[#EA8686]'>{intl?.('uhOh') ?? 'Uh oh!'}</span>
-        <span className='text-pt-purple-50'>{intl?.('failedTx') ?? 'Something went wrong...'}</span>
+      <ErrorPooly className="w-16 h-auto" />
+      <div className="flex flex-col items-center text-center">
+        <span className="text-xl font-semibold text-[#EA8686]">
+          {intl?.("uhOh") ?? "Uh oh!"}
+        </span>
+        <span className="text-pt-purple-50">
+          {intl?.("failedTx") ?? "Something went wrong..."}
+        </span>
       </div>
-      <span className='text-xs text-pt-purple-100'>
-        <span onClick={handleRetry} className='text-pt-teal cursor-pointer'>
-          {intl?.('tryAgain') ?? 'Try Again'}
-        </span>{' '}
-        |{' '}
+      <span className="text-xs text-pt-purple-100">
+        <span onClick={handleRetry} className="text-pt-teal cursor-pointer">
+          {intl?.("tryAgain") ?? "Try Again"}
+        </span>{" "}
+        |{" "}
         <a
-          href={getBlockExplorerUrl(vault.chainId, txHash, 'tx')}
-          target='_blank'
-          className='text-pt-teal'
+          href={getBlockExplorerUrl(vault.chainId, txHash, "tx")}
+          target="_blank"
+          className="text-pt-teal"
         >
-          {intl?.('viewOn', { name }) ?? `View on ${name}`}
+          {intl?.("viewOn", { name }) ?? `View on ${name}`}
         </a>
       </span>
     </>
-  )
-}
+  );
+};
