@@ -72,7 +72,7 @@ export const SuccessView = (props: SuccessViewProps) => {
           intl={t_common}
           className="!py-1"
         />
-        <SuccessPooly className="w-40 h-auto mt-3" />
+        <SuccessPooly />
       </div>
       <span className="text-sm text-center md:text-base">
         {t_modals("nowEligible")}
