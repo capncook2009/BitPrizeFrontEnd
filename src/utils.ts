@@ -25,24 +25,24 @@ import { baseSepolia } from "viem/chains";
  * @param options optional settings
  * @returns
  */
-export const createCustomWagmiConfig = (
-  networks: NETWORK[],
-  options?: { useCustomRPCs?: boolean }
-) => {
-  const supportedNetworks = Object.values(WAGMI_CHAINS).filter(
-    (chain) => networks.includes(chain.id) && !!RPC_URLS[chain.id]
-  ) as any as [Chain, ...Chain[]];
+export const createCustomWagmiConfig = () =>
+  // networks: NETWORK[],
+  // options?: { useCustomRPCs?: boolean }
+  {
+    // const supportedNetworks = Object.values(WAGMI_CHAINS).filter(
+    //   (chain) => networks.includes(chain.id) && !!RPC_URLS[chain.id]
+    // ) as any as [Chain, ...Chain[]];
 
-  return createConfig({
-    chains: [baseSepolia],
-    connectors: getWalletConnectors(),
-    transports: {
-      [baseSepolia.id]: http(),
-    },
-    batch: { multicall: { batchSize: 1_024 * 1_024 } },
-    ssr: true,
-  });
-};
+    return createConfig({
+      chains: [baseSepolia],
+      connectors: getWalletConnectors(),
+      transports: {
+        [baseSepolia.id]: http(),
+      },
+      batch: { multicall: { batchSize: 1_024 * 1_024 } },
+      ssr: true,
+    });
+  };
 
 /**
  * Returns wallet connectors for Wagmi & RainbowKit

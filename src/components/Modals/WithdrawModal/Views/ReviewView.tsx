@@ -183,7 +183,7 @@ const BasicWithdrawFormInput = (props: BasicWithdrawFormInputProps) => {
         </span>
         <div className="flex shrink-0 items-center gap-1">
           <TokenIcon
-            token={token}
+            token={{ ...token, logoURI: vault.tokenLogoURI }}
             fallbackToken={{
               chainId: token.chainId,
               address: fallbackLogoTokenAddress,

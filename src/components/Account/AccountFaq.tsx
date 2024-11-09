@@ -7,24 +7,30 @@ type FaqItem = {
 
 const faqData: FaqItem[] = [
   {
-    question: "How do I change my password?",
+    question:
+      "BitPrize claims to be “loss-less” lottery ? There is no free-lunch in finance.",
     answer:
-      "You can change your password by going to Account Settings and selecting 'Change Password'. Follow the prompts to enter your current password and set a new one.",
+      "How BitPrize works is you pool cash in a smart contract that deposits this pool in one of the safest globally provided yield sources on the Ethereum blockchain. The yield generated is accumulated and distributed to randomly selected 5 users every 2 weeks.",
   },
   {
-    question: "How can I update my email address?",
+    question: "Ok, so what are the risks?",
     answer:
-      "To update your email address, navigate to Account Settings, click on 'Email Preferences', and follow the verification process to confirm your new email.",
+      "We deposit assets in battle tested smart contracts securing over $20B usd. Large corporations and banks use these products.",
   },
   {
-    question: "What payment methods do you accept?",
+    question:
+      "I have deposited $10 only. Is there a way I can increase my winning odds?",
     answer:
-      "We accept all major credit cards (Visa, MasterCard, American Express), PayPal, and bank transfers for payment.",
+      "To be clear, nothing is assured. But yes since this product was created for financial freedom for a global audience - you can play games and get on the weekly leaderboard. That should help your odds.",
   },
   {
-    question: "How do I delete my account?",
+    question: "Can I share the app with my friends? Does that help ?",
+    answer: "Yes, the more users you bring helps your odds in weekly prizes.",
+  },
+  {
+    question: "Is BitPrize a bank ?",
     answer:
-      "To delete your account, please contact our support team. Note that this action cannot be undone and all your data will be permanently removed.",
+      "NOOO. We are a modern global fin-tech application that incentivizes savings (yes) but with prizes. We never hold your money.",
   },
 ];
 

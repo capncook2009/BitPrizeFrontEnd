@@ -1,13 +1,13 @@
 import { Vault } from "@generationsoftware/hyperstructure-client-js";
-import {
-  useCachedVaultLists,
-  // useVaultShareData,
-  // useVaultTokenAddress,
-} from "@generationsoftware/hyperstructure-react-hooks";
-import { VaultList } from "@shared/types";
-import { getVaultId, lower, NETWORK } from "@shared/utilities";
+// import {
+//   useCachedVaultLists,
+//   // useVaultShareData,
+//   // useVaultTokenAddress,
+// } from "@generationsoftware/hyperstructure-react-hooks";
+// import { VaultList } from "@shared/types";
+// import { getVaultId, lower, NETWORK } from "@shared/utilities";
 import classNames from "classnames";
-import { useMemo } from "react";
+// import { useMemo } from "react";
 // import { TOKEN_LOGO_OVERRIDES } from "../../constants";
 // import { NetworkIcon } from "../Icons/NetworkIcon";
 import { TokenIcon } from "../Icons/TokenIcon";
@@ -101,15 +101,10 @@ export const VaultBadge = (props: VaultBadgeProps) => {
                 symbolClassName
               )}
             >
-              {vault.shareData.symbol}
+              {vault?.shareData?.symbol}
             </span>
           )}
         </div>
-        {/* {!!vaultInfo?.extensions?.yieldSource?.name && (
-          <span className={classNames('text-xs text-pt-purple-200', yieldSourceClassName)}>
-            {vaultInfo.extensions.yieldSource.name}
-          </span>
-        )} */}
       </div>
     </div>
   );

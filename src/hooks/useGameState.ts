@@ -1,5 +1,6 @@
 import { BACKEND_API_URL } from "@constants/config";
 import axios from "axios";
+// import { useRouter } from "next/router";
 import { useState, useEffect } from "react";
 import { useAccount } from "wagmi";
 
@@ -45,6 +46,32 @@ export const useGameState = ({
   const [syncTimeout, setSyncTimeout] = useState<NodeJS.Timeout | null>(null);
   const { address } = useAccount();
 
+  // const router = useRouter();
+
+  useEffect(() => {
+    if (!address) {
+      return;
+    }
+    // console.log("query params ", router.query);
+    async function signup() {
+      // const referredBy: any = !router.query?.referredBy
+      //   ? ""
+      //   : router.query?.referredBy;
+      const body = {
+        walletAddress: address?.toLowerCase(),
+      };
+      const res = await axios.post(
+        `${BACKEND_API_URL}/api/bitprize/signUpUser`,
+        body
+      );
+      const data = res.data;
+      if (!data.error) {
+        console.log("signup success");
+      }
+    }
+
+    signup();
+  }, [address]);
   // Initialize game state from localStorage or default values
   useEffect(() => {
     try {

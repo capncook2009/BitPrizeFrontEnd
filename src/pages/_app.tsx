@@ -6,7 +6,7 @@ import type { AppContext, AppInitialProps, AppProps } from "next/app";
 import App from "next/app";
 import { WagmiProvider } from "wagmi";
 import { AppContainer } from "@components/AppContainer";
-import { SUPPORTED_NETWORKS } from "@constants/config";
+// import { SUPPORTED_NETWORKS } from "@constants/config";
 import { ptRainbowTheme } from "@constants/theme";
 import { useFathom } from "@hooks/useFathom";
 import "../styles/globals.css";
@@ -20,11 +20,11 @@ import { base } from "viem/chains";
 // React Query Client:
 const queryClient = new QueryClient();
 
-const networks = [
-  ...SUPPORTED_NETWORKS.mainnets,
-  ...SUPPORTED_NETWORKS.testnets,
-];
-const wagmiConfig = createCustomWagmiConfig(networks, { useCustomRPCs: true });
+// const networks = [
+//   ...SUPPORTED_NETWORKS.mainnets,
+//   ...SUPPORTED_NETWORKS.testnets,
+// ];
+const wagmiConfig = createCustomWagmiConfig();
 
 export interface CustomAppProps {
   serverProps: {
