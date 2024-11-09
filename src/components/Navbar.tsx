@@ -92,7 +92,6 @@ export const Navbar = () => {
           >
             Login with tg
           </button> */}
-          ;
         </div>
       </FlowbiteNavbar>
 

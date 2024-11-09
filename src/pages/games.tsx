@@ -197,7 +197,7 @@ export default function ReferralPage() {
           {dummyGames.map((game, index) => (
             <div
               key={game.id}
-              className="group overflow-hidden rounded-xl bg-white shadow-sm transition-all hover:shadow-lg"
+              className="group overflow-hidden rounded-xl bg-pt-purple-600 shadow-sm transition-all hover:shadow-lg"
             >
               {/* Game Thumbnail with Overlay */}
               <div className="relative aspect-video overflow-hidden">

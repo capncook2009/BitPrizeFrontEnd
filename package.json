@@ -13,6 +13,7 @@
     "@generationsoftware/hyperstructure-react-hooks": "1.25.2",
     "@heroicons/react": "^2.0.16",
     "@highlight-run/next": "^7.5.3",
+    "@lottiefiles/dotlottie-react": "^0.9.3",
     "@privy-io/cross-app-connect": "^0.0.1",
     "@privy-io/react-auth": "^1.93.0",
     "@rainbow-me/rainbowkit": "^2.1.5",
